@@ -7,12 +7,12 @@ import pprint
 import matplotlib
 import matplotlib.pyplot as plt
 
-file_name = '/Users/megantabbutt/Cosmology/RedMagic/DES_Y1A1_3x2pt_redMaGiC_zerr_CATALOG.fits'
+file_name = '/afs/hep.wisc.edu/home/tabbutt/public/projects/Jan2020/RedMagic/DES_Y1A1_3x2pt_redMaGiC_zerr_CATALOG.fits'
 data = fitsio.read(file_name)
 print(data.dtype)  # Includes: ID, RA, DEC, ZREDMAGIC, ZREDMAGIC_E, weight
 print(data.shape)  # 653691 objects
 
-file_name_rand = '/Users/megantabbutt/Cosmology/RedMagic/DES_Y1A1_3x2pt_redMaGiC_RANDOMS.fits'
+file_name_rand = '/afs/hep.wisc.edu/home/tabbutt/public/projects/Jan2020/RedMagic/DES_Y1A1_3x2pt_redMaGiC_RANDOMS.fits'
 data_rand = fitsio.read(file_name)
 print(data_rand.dtype)  # Includes: ID, RA, DEC, ZREDMAGIC, ZREDMAGIC_E, weight
 print(data_rand.shape)  # 653691 objects

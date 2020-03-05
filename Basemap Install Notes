@@ -1,12 +1,17 @@
-Basemap:
-https://matplotlib.org/basemap/users/installing.html
+** So many issues with basemaps... **
 
-Download tar.gz file to /miniconda3/pkgs
-Untar the file: gunzip -c FILENAME.tar.gz | tar xopf -
-cd into the basemaps folder
+Verison 1 of what the fix was in the end with hints from people online:
 
-for GEOS: 
->>> cd geos-3.3.3
->>> export GEOS_DIR=/miniconda3/pkgs/
->>> ./configure --prefix=$GEOS_DIR
->>> make; make install
+- Install on a fresh environment, if install in root, var path issues
+- First updates matplotlib on root
+- So I installed on ccl environment with no basemaps ever installed
+- conda install basemap
+- here is the code to import and set path: 
+>>> import mpl_toolkits
+>>> mpl_toolkits.__path__.append('//miniconda3/envs/ccl/lib/python3.7/site-packages/mpl_toolkits/')
+>>> from mpl_toolkits.basemap import Basemap
+
+- had a lot of issues finding this path, but stole it from a warning that a different code shot me that
+  pointed me to where the mpl_toolkits was installed. Good to note. Was thinking it was in //miniconda3/pkgs. 
+  (maybe for root that is true?)
+

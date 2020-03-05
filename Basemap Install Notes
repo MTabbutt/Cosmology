@@ -1,0 +1,12 @@
+Basemap:
+https://matplotlib.org/basemap/users/installing.html
+
+Download tar.gz file to /miniconda3/pkgs
+Untar the file: gunzip -c FILENAME.tar.gz | tar xopf -
+cd into the basemaps folder
+
+for GEOS: 
+>>> cd geos-3.3.3
+>>> export GEOS_DIR=/miniconda3/pkgs/
+>>> ./configure --prefix=$GEOS_DIR
+>>> make; make install

@@ -2,7 +2,7 @@
 
 This folder is the main folder for Cosmology research, individual projects are listed in here under different directories
 
-<strong> - All data products are stored on local device  </strong>
+- <strong> All data products are stored on local device  </strong>
 - Most files have a "Current versions notes to reader:" that should be read first for guidance
 
 <h3> Directories: 

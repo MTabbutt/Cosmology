@@ -7,8 +7,8 @@ This folder is the main folder for Cosmology research, individual projects are l
 
 <h2> Directories: 
 
-<h4> SNe CrossCorrelations: </h4></br>
+<h4> SNe CrossCorrelations: </h4>
 - SNe Cross Correlations project. 
 
-<h4> Old: </h4></br>
+<h4> Old: </h4>
 - Folder for old files or misc files. Room of Requirement for Code. Don't put important things in here. 

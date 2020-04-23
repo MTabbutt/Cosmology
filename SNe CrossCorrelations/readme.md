@@ -13,3 +13,8 @@
 
 - <Strong> TreeCorr Documentation Summary.ipynb </Strong> : A bridge between Jarvis Treecorr Documentation and my actual CrossCorr code. Cheat sheet of need to know functions to understand the PanSTARRS and CMASS _ Correlations.ipynb. <em> Work in Progress. </em>
 
+## To-Do List: 
+
+- Need to clean up the raw notebook
+- Work on the Theory explanation latex note
+- w(theta) change with varying parameters? make some plots. 

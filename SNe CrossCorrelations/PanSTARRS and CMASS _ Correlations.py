@@ -1,35 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# <Strong> Note to the reader: </Strong> This notebook currently calculates the Auto count-count correlations of the PanSTARRS data with a lot errors and fixes that need to be made. It also needs to do the NN auto Corr for CMass and then a cross corr. </br>
-# 
-# -MT 4/23/20 10am
-# 
-# - Keywords to search for in workflow: "Important", "Need to fix", "need to do"
-
-# ### List of changes/fixes that are not resolved: 
-# 
-# - union for CMASS rands takes wa too long, OK to try once for signal verification but otherwise make it a box around the pointing only? --- NEED TO FIX
-# - Including the 10th panstarrs data in the NN but not in the randoms ---- NEED TO FIX
-# - Should I do it with only the 9 that overlap CMASS? --- Not that big of a deal, make note in section -- NEED TO DO
-# - Need to add more randoms, want order 10:1 ratio of randoms to data --- NEED TO FIX
-# - Need to pick out the SNe with good z either themselves or host data --- NEED TO FIX
-# - Randoms doesnt cover the whole area --- NEED TO FIX
-# - Save databases to data products --- NEED TO FIX
-
-# ### Imports and formatting: 
-
-# In[ ]:
-
-
-# Make Jupyter Notebook full screen 
-from IPython.core.display import display, HTML
-display(HTML("<style>.container { width:100% !important; }</style>"))
-
-
-# In[ ]:
-
-
 import treecorr
 import fitsio
 import numpy
@@ -42,13 +13,11 @@ import astropy.units as u
 import sqlite3
 from astropy.table import Table
 from matplotlib.patches import Circle
-from mpl_toolkits.basemap import Basemap
+
 
 
 # ### Define notebook wide functions and data paths to use:
-
-# In[ ]:
-
+print("line 50/500")
 
 '''
 Convert from PanSTARRS data where RA is in "u.hourangle" and DEC is in "u.deg" to just degrees
@@ -71,30 +40,12 @@ def getRADecFromHourAngles(Dataframe, newDataFrame):
 
 dataPath = '/Users/megantabbutt/CosmologyDataProducts/'
 
-
-#  <hr style="height:3px"> 
-
-# 
-# ## 0. Pull in and parse data:
-# 
-# note: There are 10 pointings for the PanSTARRS data, we will use all 10 for the Auto Correlation, but when we correlated to CMASS, we need to only use the 9 overlap with CMASS. --- IMPORTANT
-
-# #### PanSTARRS: 
-
-# In[ ]:
-
-
-# Different code parses the .txt file into a JSON, pull in from JSON here: 
-
 PanSTARRS = pd.read_json( dataPath + 'PanSTARRS_Data.json', orient='columns' )
 PanSTARRSNEW = pd.DataFrame(columns = ['ID', 'RA', 'DEC', 'zSN', 'zHost'], index=PanSTARRS.index)
 getRADecFromHourAngles(PanSTARRS, PanSTARRSNEW) 
 PanSTARRSNEW.head(3) #1169 objects
 
-
-# In[ ]:
-
-
+print("line 100/500")
 # Open a SQL Connection and pull out SNe data that has a good z for itsself or its host
 
 connPAN = sqlite3.connect(dataPath + 'PanSTARRS.db')
@@ -102,13 +53,7 @@ connPAN = sqlite3.connect(dataPath + 'PanSTARRS.db')
 
 qry = "SELECT ID, DEC, RA, zSN, zHost FROM PanSTARRSNEW WHERE (zSN > -999) || (zHost > -999)"
 PanSTARRSNEW_GoodZ = pd.read_sql(qry, con=connPAN)
-PanSTARRSNEW_GoodZ.head(3) # 1129 objects over 10 pointings 
-
-
-# #### CMASS/LOWZ:
-
-# In[ ]:
-
+#PanSTARRSNEW_GoodZ.head(3) # 1129 objects over 10 pointings
 
 # Pull in the CMASS data from a fits file and delete some columns that are no good for pd dataframe:
 
@@ -119,10 +64,7 @@ del CMASSLOWZTOT_North_Tbl['FRACPSF', 'EXPFLUX', 'DEVFLUX', 'PSFFLUX', 'MODELFLU
                           'WEIGHT_SEEING', 'WEIGHT_SYSTOT', 'COMP', 'PLATE', 'FIBERID', 'MJD', 'FINALN', 'SPECTILE', 'ICOLLIDED', 
                           'INGROUP', 'MULTGROUP', 'ISECT']
 CMASSLOWZTOT_North_DF = CMASSLOWZTOT_North_Tbl.to_pandas()
-CMASSLOWZTOT_North_DF.head(3)
-
-
-# In[ ]:
+#CMASSLOWZTOT_North_DF.head(3)
 
 
 CMASSLOWZTOT_South_Tbl = Table.read(dataPath + 'galaxy_DR12v5_CMASSLOWZTOT_South.fits', format='fits')
@@ -132,11 +74,7 @@ del CMASSLOWZTOT_South_Tbl['FRACPSF', 'EXPFLUX', 'DEVFLUX', 'PSFFLUX', 'MODELFLU
                           'WEIGHT_SEEING', 'WEIGHT_SYSTOT', 'COMP', 'PLATE', 'FIBERID', 'MJD', 'FINALN', 'SPECTILE', 'ICOLLIDED', 
                           'INGROUP', 'MULTGROUP', 'ISECT']
 CMASSLOWZTOT_South_DF = CMASSLOWZTOT_South_Tbl.to_pandas()
-CMASSLOWZTOT_South_DF.head(3)
-
-
-# In[ ]:
-
+#CMASSLOWZTOT_South_DF.head(3)
 
 # Open a SQL connection to union the four CMASS/LOWZ data sets together: 
 
@@ -148,11 +86,8 @@ qry = "SELECT * FROM CMASSLOWZTOT_South UNION SELECT * FROM CMASSLOWZTOT_North"
 CMASSLOWZTOT_DF = pd.read_sql(qry, con=connBOSS)
 CMASSLOWZTOT_DF.head(3) # 1.3 million objects
 
-
+print("line 150/500")
 # #### Pull in the Randoms provided by CMASS:
-
-# In[ ]:
-
 
 CMASSLOWZTOT_North_rand_Tbl = Table.read(dataPath + 'random0_DR12v5_CMASSLOWZTOT_North.fits', format='fits')
 del CMASSLOWZTOT_North_rand_Tbl['WEIGHT_FKP', 'IPOLY', 'ISECT', 'ZINDX', 'SKYFLUX', 'IMAGE_DEPTH', 
@@ -161,9 +96,7 @@ CMASSLOWZTOT_North_rand_Tbl
 CMASSLOWZTOT_North_rand_DF = CMASSLOWZTOT_North_rand_Tbl.to_pandas()
 CMASSLOWZTOT_North_rand_DF.head(3)
 
-
-# In[ ]:
-
+print("completed pulling in north randoms")
 
 CMASSLOWZTOT_South_rand_Tbl = Table.read(dataPath + 'random0_DR12v5_CMASSLOWZTOT_South.fits', format='fits')
 del CMASSLOWZTOT_South_rand_Tbl['WEIGHT_FKP', 'IPOLY', 'ISECT', 'ZINDX', 'SKYFLUX', 'IMAGE_DEPTH', 
@@ -172,14 +105,13 @@ CMASSLOWZTOT_South_rand_Tbl
 CMASSLOWZTOT_South_rand_DF = CMASSLOWZTOT_South_rand_Tbl.to_pandas()
 CMASSLOWZTOT_South_rand_DF.head(3)
 
-
-# In[ ]:
-
+print("completed pulling in South randoms")
 
 connBOSSRands = sqlite3.connect(dataPath + 'CMASS_and_LOWZ_rands.db')
 #CMASSLOWZTOT_South_rand_DF.to_sql("CMASSLOWZTOT_South_rands", con=connBOSSRands) # Execute these if .db doesn't exist yet
 #CMASSLOWZTOT_North_rand_DF.to_sql("CMASSLOWZTOT_North_rands", con=connBOSSRands) # Do one at a time to make sure all is good
 
+print("completed sqlite connection opening: ")
 
 # In[ ]:
 
@@ -191,23 +123,22 @@ CMASSLOWZTOT_DF_rands.to_json(dataPath + "CMASSLOWZTOT_DF_rands")
 CMASSLOWZTOT_DF_rands.head(3)
 
 
-# ## ^ ^ ^ ^ DONT FORGET TO CHANGE ME BACK for HEP!!!!
+print("completed sqlite: ")
 
-#  <hr style="height:3px"> 
+connBOSS.close()
+connBOSSRands.close()
+
+print("completed sqlite closing ")
 
 # ## 1. Create the TreeCorr Catalogs of Data:
 
-# In[ ]:
-
+print("line 200/500")
 
 catPanSTARRS = treecorr.Catalog(ra=PanSTARRSNEW['RA'], dec=PanSTARRSNEW['DEC'], ra_units='degrees', dec_units='degrees')
-catPanSTARRS
+print(catPanSTARRS)
 
 
 # ### Count-Count Correlation Function: 
-
-# In[ ]:
-
 
 # Data Auto-correlation: (dd)
 ddPanSTARRS = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
@@ -216,9 +147,6 @@ ddPanSTARRS.process(catPanSTARRS)
 
 # ### 1.5 Create the randoms with PanSTARRS since no mask yet
 # Include all ten pointings for now, can redo when we are going to crossCorr with CMASS
-
-# In[ ]:
-
 
 # Change this for HEP for more rands 
 randsLength = 10**5
@@ -236,10 +164,6 @@ rand_dec_PanSTARRS = numpy.arcsin(rand_sindec_PanSTARRS)
 
 
 # ## ^ ^ ^ ^ DONT FORGET TO CHANGE ME BACK for HEP!!!!
-
-# In[ ]:
-
-
 # MD02 is the one that needs to be eliminated, not in CMASS footprint 
 
 pointings = {"MD01": [035.875, -04.250], "MD03": [130.592, 44.317], "MD04": [150.000, 02.200], 
@@ -248,7 +172,7 @@ pointings = {"MD01": [035.875, -04.250], "MD03": [130.592, 44.317], "MD04": [150
 
 
 # In[ ]:
-
+print("line 250/500")
 
 # Takes forever 
 # Check that the randoms cover the same space as the data
@@ -300,9 +224,9 @@ plt.show()
 
 
 # In[ ]:
+print("line 300/500")
 
-
-rand_ra_PanSTARRS.min()
+print(rand_ra_PanSTARRS.min())
 
 
 # In[ ]:
@@ -350,7 +274,7 @@ ax2.set_title('Data on top of randoms')
 
 plt.show()
 
-
+print("line 350/500")
 # In[ ]:
 
 
@@ -390,7 +314,7 @@ dr.process(catPanSTARRS, rand)
 
 
 # In[ ]:
-
+print("line 400/500")
 
 xi, varxi = ddPanSTARRS.calculateXi(rr, dr)
 sig = numpy.sqrt(varxi)
@@ -412,30 +336,16 @@ plt.show()
 
 # ## 2.  CMASS Count-Count Auto Correlation Function:
 
-# In[ ]:
-
-
 catCMASS = treecorr.Catalog(ra=CMASSLOWZTOT_DF['RA'], dec=CMASSLOWZTOT_DF['DEC'], 
                                 ra_units='degrees', dec_units='degrees')
-catCMASS
-
-
-# In[ ]:
-
+print(catCMASS)
 
 # Data Auto-correlation: (dd)
 ddCMASS = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
 ddCMASS.process(catCMASS)
 
 
-# In[ ]:
-
-
 CMASSLOWZTOT_DF_rands.head(3)
-
-
-# In[ ]:
-
 
 # Check that the randoms cover the same space as the data
 f, (ax1, ax2) = plt.subplots(1, 2, figsize=(15,5))
@@ -452,9 +362,7 @@ ax2.set_ylabel('Dec (degrees)')
 ax2.set_title('Randoms')
 
 plt.show()
-
-
-# In[ ]:
+print("line 450/500")
 
 
 randCMASS = treecorr.Catalog(ra=CMASSLOWZTOT_DF_rands['RA'], dec=CMASSLOWZTOT_DF_rands['DEC'], ra_units='degrees', dec_units='degrees')
@@ -462,15 +370,8 @@ rrCMASS = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_uni
 rrCMASS.process(randCMASS)
 
 
-# In[ ]:
-
-
 drCMASS = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
 drCMASS.process(catCMASS, randCMASS)
-
-
-# In[ ]:
-
 
 xiCMASS, varxiCMASS = ddCMASS.calculateXi(rrCMASS, drCMASS)
 sigCMASS = numpy.sqrt(varxiCMASS)
@@ -489,10 +390,4 @@ plt.legend([leg], [r'$w(\theta)$'], loc='lower left')
 plt.xlim([0.01,10])
 plt.show()
 
-
-# In[ ]:
-
-
-connBOSS.close()
-connBOSSRands.close()
-
+print("line 500/500")

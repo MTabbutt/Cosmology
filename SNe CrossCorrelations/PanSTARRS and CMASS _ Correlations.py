@@ -34,7 +34,7 @@ from matplotlib.patches import Circle
 #//////////////////////////////////////////// THINGS TO CHANGE EACH TIME ///////////////////////////////////////////////
 
 #dataPath = '/Users/megantabbutt/CosmologyDataProducts/'
-dataPath = '/afs/hep.wisc.edu/home/tabbutt/private/CosmologyDataProducts'
+dataPath = '/afs/hep.wisc.edu/home/tabbutt/private/CosmologyDataProducts/'
 
 # Change this for HEP for more rands
 randsLength = 10**5

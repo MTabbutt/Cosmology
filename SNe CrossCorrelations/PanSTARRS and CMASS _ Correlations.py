@@ -148,33 +148,33 @@ pointings = {"MD01": [035.875, -04.250], "MD03": [130.592, 44.317], "MD04": [150
 
 
 # Check that the randoms cover the same space as the data
-f, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(20, 5))
+f1, (ax1a, ax2a, ax3a) = plt.subplots(1, 3, figsize=(20, 5))
 
-ax1.scatter(catPanSTARRS.ra * 180/numpy.pi, catPanSTARRS.dec * 180/numpy.pi, color='red', s=0.1, marker='x')
-ax1.scatter(rand_ra_PanSTARRS * 180/numpy.pi, rand_dec_PanSTARRS * 180/numpy.pi, color='blue', s=0.1)
-ax1.set_xlabel('RA (degrees)')
-ax1.set_ylabel('Dec (degrees)')
-ax1.set_title('Randoms on top of data')
+ax1a.scatter(catPanSTARRS.ra * 180/numpy.pi, catPanSTARRS.dec * 180/numpy.pi, color='red', s=0.1, marker='x')
+ax1a.scatter(rand_ra_PanSTARRS * 180/numpy.pi, rand_dec_PanSTARRS * 180/numpy.pi, color='blue', s=0.1)
+ax1a.set_xlabel('RA (degrees)')
+ax1a.set_ylabel('Dec (degrees)')
+ax1a.set_title('Randoms on top of data')
 
 # Repeat in the opposite order
-ax2.scatter(rand_ra_PanSTARRS * 180/numpy.pi, rand_dec_PanSTARRS * 180/numpy.pi, color='blue', s=0.1, marker='x')
-ax2.scatter(catPanSTARRS.ra * 180/numpy.pi, catPanSTARRS.dec * 180/numpy.pi, color='red', s=0.1)
-ax2.set_xlabel('RA (degrees)')
-ax2.set_ylabel('Dec (degrees)')
-ax2.set_title('Data on top of randoms')
+ax2a.scatter(rand_ra_PanSTARRS * 180/numpy.pi, rand_dec_PanSTARRS * 180/numpy.pi, color='blue', s=0.1, marker='x')
+ax2a.scatter(catPanSTARRS.ra * 180/numpy.pi, catPanSTARRS.dec * 180/numpy.pi, color='red', s=0.1)
+ax2a.set_xlabel('RA (degrees)')
+ax2a.set_ylabel('Dec (degrees)')
+ax2a.set_title('Data on top of randoms')
 
 # Zoom to look at coverage of randoms and reals
-ax3.scatter(rand_ra_PanSTARRS * 180/numpy.pi, rand_dec_PanSTARRS * 180/numpy.pi, color='blue', s=1, marker='x')
-ax3.scatter(catPanSTARRS.ra * 180/numpy.pi, catPanSTARRS.dec * 180/numpy.pi, color='red', s=1)
-ax3.set_xlabel('RA (degrees)')
-ax3.set_ylabel('Dec (degrees)')
-ax3.set_title('Data on top of randoms_Zoom')
-ax3.legend(loc = "upper right")
-ax3.set_xlim(129, 133)
-ax3.set_ylim(42, 46)
+ax3a.scatter(rand_ra_PanSTARRS * 180/numpy.pi, rand_dec_PanSTARRS * 180/numpy.pi, color='blue', s=1, marker='x', label='rands')
+ax3a.scatter(catPanSTARRS.ra * 180/numpy.pi, catPanSTARRS.dec * 180/numpy.pi, color='red', s=1, label='data')
+ax3a.set_xlabel('RA (degrees)')
+ax3a.set_ylabel('Dec (degrees)')
+ax3a.set_title('Data on top of randoms_Zoom')
+ax3a.legend(loc = "upper right")
+ax3a.set_xlim(129, 133)
+ax3a.set_ylim(42, 46)
 
 plt.savefig(saveFigFolder + 'PanSTARRS_data_rands_overlap')
-plt.show()
+plt.close()
 
 
 # Need to make the mask for the randoms in PanSTARRS:
@@ -186,7 +186,8 @@ for pointing in pointings:
     X0 = pointings[pointing][0]
     Y0 = pointings[pointing][1]
     rad = 3.3/2
-    print("pointing coords" + pointings[pointing])
+    print("Pointing coords:")
+    print(pointings[pointing])
     
     for i in range(len(rand_ra_PanSTARRS)):
         #print(rand_ra_PanSTARRS[i], rand_dec_PanSTARRS[i])
@@ -202,69 +203,46 @@ for pointing in pointings:
 
 
 # Check that the randoms cover the same space as the data
-f, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(20,5))
+f2, (ax1b, ax2b, ax3b) = plt.subplots(1, 3, figsize=(20,5))
 
-ax1.scatter(catPanSTARRS.ra * 180/numpy.pi, catPanSTARRS.dec * 180/numpy.pi, color='red', s=0.1, marker='x')
-ax1.scatter(maskRA, maskDEC, color='blue', s=0.1)
-ax1.set_xlabel('RA (degrees)')
-ax1.set_ylabel('Dec (degrees)')
-ax1.set_title('Randoms on top of data with Mask')
+ax1b.scatter(catPanSTARRS.ra * 180/numpy.pi, catPanSTARRS.dec * 180/numpy.pi, color='red', s=0.1, marker='x')
+ax1b.scatter(maskRA, maskDEC, color='blue', s=0.1)
+ax1b.set_xlabel('RA (degrees)')
+ax1b.set_ylabel('Dec (degrees)')
+ax1b.set_title('Randoms on top of data with Mask')
 
 # Repeat in the opposite order
-ax2.scatter(maskRA, maskDEC, color='blue', s=0.1)
-ax2.scatter(catPanSTARRS.ra * 180/numpy.pi, catPanSTARRS.dec * 180/numpy.pi, color='red', s=0.1, marker='x')
-ax2.set_xlabel('RA (degrees)')
-ax2.set_ylabel('Dec (degrees)')
-ax2.set_title('Data on top of randoms with Mask')
+ax2b.scatter(maskRA, maskDEC, color='blue', s=0.1)
+ax2b.scatter(catPanSTARRS.ra * 180/numpy.pi, catPanSTARRS.dec * 180/numpy.pi, color='red', s=0.1, marker='x')
+ax2b.set_xlabel('RA (degrees)')
+ax2b.set_ylabel('Dec (degrees)')
+ax2b.set_title('Data on top of randoms with Mask')
 
 # Zoom to look at coverage of randoms and reals
-ax3.scatter(maskRA, maskDEC, color='blue', s=1, marker='x')
-ax3.scatter(catPanSTARRS.ra * 180/numpy.pi, catPanSTARRS.dec * 180/numpy.pi, color='red', s=1)
-ax3.set_xlabel('RA (degrees)')
-ax3.set_ylabel('Dec (degrees)')
-ax3.set_title('Data on top of randoms with mask_Zoom')
-ax3.legend(loc = "upper right")
-ax3.set_xlim(129, 133)
-ax3.set_ylim(42, 46)
+ax3b.scatter(maskRA, maskDEC, color='blue', s=1, marker='x', label='rands_mask')
+ax3b.scatter(catPanSTARRS.ra * 180/numpy.pi, catPanSTARRS.dec * 180/numpy.pi, color='red', s=1, label='data')
+ax3b.set_xlabel('RA (degrees)')
+ax3b.set_ylabel('Dec (degrees)')
+ax3b.set_title('Data on top of randoms with mask_Zoom')
+ax3b.legend(loc = "upper right")
+ax3b.set_xlim(129, 133)
+ax3b.set_ylim(42, 46)
 
 plt.savefig(saveFigFolder + 'PanSTARRS_data_rands_overlap_mask')
-plt.show()
+#plt.show()
+plt.close()
 
 # make Random catalog with mask
 rand = treecorr.Catalog(ra=maskRA, dec=maskDEC, ra_units='degrees', dec_units='degrees')
 rr = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
 rr.process(rand)
 
-
-# plot the autocorrelation function:
-#xi, varxi = ddPanSTARRS.calculateXi(rr)
-
-##r = numpy.exp(ddPanSTARRS.meanlogr)
-#sig = numpy.sqrt(varxi)
-
-#plt.plot(r, xi, color='blue')
-#plt.plot(r, -xi, color='blue', ls=':')
-#plt.errorbar(r[xi>0], xi[xi>0], yerr=sig[xi>0], color='green', lw=0.5, ls='')
-#plt.errorbar(r[xi<0], -xi[xi<0], yerr=sig[xi<0], color='green', lw=0.5, ls='')
-#leg = plt.errorbar(-r, xi, yerr=sig, color='blue')
-
-#plt.xscale('log')
-#plt.yscale('log', nonposy='clip')
-#plt.xlabel(r'$\theta$ (degrees)')
-
-#plt.legend([leg], [r'$w(\theta)$'], loc='lower left')
-#plt.xlim([0.01,10])
-##plt.savefig(saveFigFolder + 'PanSTARRS_NNautoCorrFunc_')
-#plt.show()
-
-
-# In[ ]:
-
-
 dr = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
 dr.process(catPanSTARRS, rand)
 
+
 # Plot Landy-Sca
+r = numpy.exp(ddPanSTARRS.meanlogr)
 xi, varxi = ddPanSTARRS.calculateXi(rr, dr)
 sig = numpy.sqrt(varxi)
 
@@ -282,7 +260,8 @@ plt.legend([leg], [r'$w(\theta)$'], loc='lower left')
 plt.title("Count-Count Auto Corr Function for PanSTARRS")
 plt.xlim([0.01,10])
 plt.savefig(saveFigFolder + 'PanSTARRS_NNautoCorr')
-plt.show()
+#plt.show()
+plt.close()
 
 
 # ## 2.  CMASS Count-Count Auto Correlation Function:
@@ -294,26 +273,24 @@ print(catCMASS)
 # Data Auto-correlation: (dd)
 ddCMASS = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
 ddCMASS.process(catCMASS)
-
-
 CMASSLOWZTOT_DF_rands.head(3)
 
 # Check that the randoms cover the same space as the data
-f, (ax1, ax2) = plt.subplots(1, 2, figsize=(20, 5))
+f3, (ax1c, ax2c) = plt.subplots(1, 2, figsize=(20, 5))
 
-ax1.scatter(catCMASS.ra * 180/numpy.pi, catCMASS.dec * 180/numpy.pi, color='red', s=0.1)
-ax1.set_xlabel('RA (degrees)')
-ax1.set_ylabel('Dec (degrees)')
-ax1.set_title('CMASS/LOWZ Data')
+ax1c.scatter(catCMASS.ra * 180/numpy.pi, catCMASS.dec * 180/numpy.pi, color='red', s=0.1)
+ax1c.set_xlabel('RA (degrees)')
+ax1c.set_ylabel('Dec (degrees)')
+ax1c.set_title('CMASS/LOWZ Data')
 
 # Repeat in the opposite order
-ax2.scatter(CMASSLOWZTOT_DF_rands['RA'], CMASSLOWZTOT_DF_rands['DEC'], color='blue', s=0.1)
-ax2.set_xlabel('RA (degrees)')
-ax2.set_ylabel('Dec (degrees)')
-ax2.set_title('CMASS/LOWZ Randoms')
+ax2c.scatter(CMASSLOWZTOT_DF_rands['RA'], CMASSLOWZTOT_DF_rands['DEC'], color='blue', s=0.1)
+ax2c.set_xlabel('RA (degrees)')
+ax2c.set_ylabel('Dec (degrees)')
+ax2c.set_title('CMASS/LOWZ Randoms')
 plt.savefig(saveFigFolder + 'CMASS_data_rands')
-plt.show()
-
+#plt.show()
+plt.close()
 
 
 randCMASS = treecorr.Catalog(ra=CMASSLOWZTOT_DF_rands['RA'], dec=CMASSLOWZTOT_DF_rands['DEC'], ra_units='degrees', dec_units='degrees')
@@ -323,15 +300,16 @@ rrCMASS.process(randCMASS)
 drCMASS = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
 drCMASS.process(catCMASS, randCMASS)
 
+rCMASS = numpy.exp(ddCMASS.meanlogr)
 xiCMASS, varxiCMASS = ddCMASS.calculateXi(rrCMASS, drCMASS)
 sigCMASS = numpy.sqrt(varxiCMASS)
 
 # plot the LS count-count auto corr function for CMASS and rands:
-plt.plot(r, xiCMASS, color='blue')
-plt.plot(r, -xiCMASS, color='blue', ls=':')
-plt.errorbar(r[xiCMASS>0], xiCMASS[xiCMASS>0], yerr=sigCMASS[xiCMASS>0], color='green', lw=0.5, ls='')
-plt.errorbar(r[xiCMASS<0], -xiCMASS[xiCMASS<0], yerr=sigCMASS[xiCMASS<0], color='green', lw=0.5, ls='')
-leg = plt.errorbar(-r, xiCMASS, yerr=sigCMASS, color='blue')
+plt.plot(rCMASS, xiCMASS, color='blue')
+plt.plot(rCMASS, -xiCMASS, color='blue', ls=':')
+plt.errorbar(rCMASS[xiCMASS>0], xiCMASS[xiCMASS>0], yerr=sigCMASS[xiCMASS>0], color='green', lw=0.5, ls='')
+plt.errorbar(rCMASS[xiCMASS<0], -xiCMASS[xiCMASS<0], yerr=sigCMASS[xiCMASS<0], color='green', lw=0.5, ls='')
+leg = plt.errorbar(-rCMASS, xiCMASS, yerr=sigCMASS, color='blue')
 
 plt.xscale('log')
 plt.yscale('log', nonposy='clip')
@@ -341,6 +319,7 @@ plt.legend([leg], [r'$w(\theta)$'], loc='lower left')
 plt.xlim([0.01,10])
 plt.title("Count-Count Auto Corr Function for CMASS")
 plt.savefig(saveFigFolder + 'CMASS_NNautoCorr')
-plt.show()
+#plt.show()
+plt.close()
 
-
+print("Program is done.")

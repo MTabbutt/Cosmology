@@ -15,7 +15,7 @@
 # Imports:
 
 import treecorr
-import fitsio
+#import fitsio
 import numpy
 import matplotlib
 import matplotlib.pyplot as plt

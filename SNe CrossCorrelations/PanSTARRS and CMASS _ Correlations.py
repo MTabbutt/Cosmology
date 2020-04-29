@@ -38,10 +38,10 @@ from matplotlib.patches import Circle
 dataPath = '/afs/hep.wisc.edu/home/tabbutt/private/CosmologyDataProducts/'
 
 # Change this for HEP for more rands
-randsLength = 10**5
+randsLength = 10**9
 
 # Figures generated will go to this file
-dateName = 'Apr_29_20_10am/' # need to make this...
+dateName = 'Apr_29_20_5pm/' # need to make this...
 
 #saveFigFolder = '/Users/megantabbutt/Cosmology/Cosmology/SNe CrossCorrelations/figures/' + dateName
 saveFigFolder =  '/afs/hep.wisc.edu/home/tabbutt/public/Cosmology/SNe CrossCorrelations/figures/' + dateName
@@ -100,9 +100,9 @@ connBOSSRands = sqlite3.connect(dataPath + 'CMASS_and_LOWZ_rands.db')
 # NOTE: index is a SQL keyword... BLAH
 randSampleQry = "SELECT * FROM CMASSLOWZTOT_South_rands WHERE `index` IN (SELECT `index` FROM CMASSLOWZTOT_South_rands ORDER BY RANDOM() LIMIT 10000) UNION SELECT * FROM CMASSLOWZTOT_North_rands WHERE `index` IN (SELECT `index` FROM CMASSLOWZTOT_North_rands ORDER BY RANDOM() LIMIT 10000)"
 randQry = "SELECT * FROM CMASSLOWZTOT_South_rands UNION SELECT * FROM CMASSLOWZTOT_North_rands"
-CMASSLOWZTOT_DF_rands = pd.read_sql(randSampleQry, con=connBOSSRands)
+CMASSLOWZTOT_DF_rands = pd.read_sql(randQry, con=connBOSSRands)
 CMASSLOWZTOT_DF_rands.to_json(dataPath + "CMASSLOWZTOT_DF_rands")
-print("CMASS adn LOWZ randoms data set opened: 20k objects")
+print("CMASS adn LOWZ randoms data set opened: 20k/___ objects")
 print(CMASSLOWZTOT_DF_rands.head(3))
 
 

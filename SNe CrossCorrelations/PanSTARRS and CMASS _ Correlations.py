@@ -19,6 +19,7 @@ import treecorr
 import numpy
 import matplotlib
 import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 import pandas as pd
 import astropy
 from astropy.coordinates import SkyCoord

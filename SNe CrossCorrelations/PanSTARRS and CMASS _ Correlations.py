@@ -1,3 +1,7 @@
+# This notebook will calculate the Count-Count Auto-Correlations for PanSTARRS and SDSS EBOSS CMASS/LOWZ data sets
+# This notebook is a conversion of the jupyter notebook - computation is the same but the code is tweaked for Python
+# V0    MT      4/29/20
+
 #!/usr/bin/env python
 # coding: utf-8
 
@@ -14,10 +18,7 @@ import sqlite3
 from astropy.table import Table
 from matplotlib.patches import Circle
 
-
-
-# ### Define notebook wide functions and data paths to use:
-print("line 50/500")
+#### Define notebook wide functions and data paths to use:
 
 '''
 Convert from PanSTARRS data where RA is in "u.hourangle" and DEC is in "u.deg" to just degrees

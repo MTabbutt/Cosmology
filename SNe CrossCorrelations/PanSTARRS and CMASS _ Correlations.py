@@ -31,9 +31,18 @@ from matplotlib.patches import Circle
 # CCL could also be an issue... Need to resolve eventually, works on HEP in pyCCL conda environment and on LSST_Stack
 
 
-#//////////////////////////////////////////// THINGS TO CHANGE FOR HEP /////////////////////////////////////////////////
+#//////////////////////////////////////////// THINGS TO CHANGE EACH TIME ///////////////////////////////////////////////
+
 dataPath = '/Users/megantabbutt/CosmologyDataProducts/'
 # dataPath = '/afs/hep.wisc.edu/home/tabbutt/private/CosmologyDataProducts'
+
+# Change this for HEP for more rands
+randsLength = 10**5
+
+# Figures generated will go to this file
+dateName = 'Apr_29_20_10am'
+
+saveFigFile = '' + dateName
 
 
 #///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -102,26 +111,23 @@ print("completed sqlite and closed connections. ")
 
 
 
-# ## 1. Create the TreeCorr Catalogs of Data:
+#///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+# 2. Create the TreeCorr Catalogs:
 
-print("line 200/500")
 
-catPanSTARRS = treecorr.Catalog(ra=PanSTARRSNEW['RA'], dec=PanSTARRSNEW['DEC'], ra_units='degrees', dec_units='degrees')
+catPanSTARRS = treecorr.Catalog(ra=PanSTARRSNEW_GoodZ['RA'], dec=PanSTARRSNEW_GoodZ['DEC'], ra_units='degrees', dec_units='degrees')
+print("TreeCorr PanSTARRS Catalog:")
 print(catPanSTARRS)
 
 
-# ### Count-Count Correlation Function: 
-
+# Count-Count Correlation Function:
 # Data Auto-correlation: (dd)
 ddPanSTARRS = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
 ddPanSTARRS.process(catPanSTARRS)
 
 
-# ### 1.5 Create the randoms with PanSTARRS since no mask yet
+# Create the randoms with PanSTARRS since no mask yet
 # Include all ten pointings for now, can redo when we are going to crossCorr with CMASS
-
-# Change this for HEP for more rands 
-randsLength = 10**5
 
 ra_min_PanSTARRS = numpy.min(catPanSTARRS.ra)
 ra_max_PanSTARRS = numpy.max(catPanSTARRS.ra)
@@ -135,20 +141,13 @@ rand_sindec_PanSTARRS = numpy.random.uniform(numpy.sin(dec_min_PanSTARRS), numpy
 rand_dec_PanSTARRS = numpy.arcsin(rand_sindec_PanSTARRS)
 
 
-# ## ^ ^ ^ ^ DONT FORGET TO CHANGE ME BACK for HEP!!!!
-# MD02 is the one that needs to be eliminated, not in CMASS footprint 
-
+# MD02 is the one that needs to be eliminated, not in CMASS footprint
 pointings = {"MD01": [035.875, -04.250], "MD03": [130.592, 44.317], "MD04": [150.000, 02.200], 
              "MD05": [161.917, 58.083], "MD06": [185.000, 47.117], "MD07": [213.704, 53.083], 
              "MD08": [242.787, 54.950], "MD09": [334.188, 00.283], "MD10": [352.312, -00.433], "MD02": [053.100, -27.800],}
 
 
-# In[ ]:
-print("line 250/500")
-
-# Takes forever 
 # Check that the randoms cover the same space as the data
-
 f, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(15,5))
 
 ax1.scatter(catPanSTARRS.ra * 180/numpy.pi, catPanSTARRS.dec * 180/numpy.pi, color='red', s=0.1, marker='x')
@@ -173,6 +172,7 @@ ax3.set_title('Data on top of randoms_Zoom')
 ax3.set_xlim(129, 133)
 ax3.set_ylim(42, 46)
 
+plt.save(saveFigFile)
 plt.show()
 
 

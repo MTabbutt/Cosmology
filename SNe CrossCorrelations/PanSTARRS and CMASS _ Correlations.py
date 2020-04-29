@@ -33,8 +33,8 @@ from matplotlib.patches import Circle
 
 #//////////////////////////////////////////// THINGS TO CHANGE EACH TIME ///////////////////////////////////////////////
 
-dataPath = '/Users/megantabbutt/CosmologyDataProducts/'
-# dataPath = '/afs/hep.wisc.edu/home/tabbutt/private/CosmologyDataProducts'
+#dataPath = '/Users/megantabbutt/CosmologyDataProducts/'
+dataPath = '/afs/hep.wisc.edu/home/tabbutt/private/CosmologyDataProducts'
 
 # Change this for HEP for more rands
 randsLength = 10**5
@@ -42,7 +42,8 @@ randsLength = 10**5
 # Figures generated will go to this file
 dateName = 'Apr_29_20_10am/' # need to make this...
 
-saveFigFolder = '/Users/megantabbutt/Cosmology/Cosmology/SNe CrossCorrelations/figures/' + dateName
+#saveFigFolder = '/Users/megantabbutt/Cosmology/Cosmology/SNe CrossCorrelations/figures/' + dateName
+saveFigFolder =  '/afs/hep.wisc.edu/home/tabbutt/public/Cosmology/SNe CrossCorrelations/figures/' + dateName
 
 
 #///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -71,6 +72,7 @@ def getRADecFromHourAngles(Dataframe, newDataFrame):
 # Open a SQL Connection and pull out SNe data that has a good z for itsself or its host
 
 connPAN = sqlite3.connect(dataPath + 'PanSTARRS.db')
+
 #PanSTARRSNEW.to_sql("PanSTARRSNEW", con=connPAN) # ADD TO PARSING NOTEBOOK -- FIX
 qry = "SELECT ID, DEC, RA, zSN, zHost FROM PanSTARRSNEW WHERE (zSN > -999) || (zHost > -999)"
 PanSTARRSNEW_GoodZ = pd.read_sql(qry, con=connPAN)

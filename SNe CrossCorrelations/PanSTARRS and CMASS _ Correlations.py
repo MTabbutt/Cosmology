@@ -1,9 +1,18 @@
+#!/usr/bin/env python
+# coding: utf-8
+
 # This notebook will calculate the Count-Count Auto-Correlations for PanSTARRS and SDSS EBOSS CMASS/LOWZ data sets
 # This notebook is a conversion of the jupyter notebook - computation is the same but the code is tweaked for Python
 # V0    MT      4/29/20
 
-#!/usr/bin/env python
-# coding: utf-8
+# FIXES:
+#
+# Pull in the database files and parse, don't need to remake the .db files, have a parsing notebook just for hadelling
+# the data and then run once on a new machine. -- SHORT TEM FIX: Assume databases are in the folder, still need to
+# make the parsing notebook that actually puts them there if they aren't already...
+
+#///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+# Imports:
 
 import treecorr
 import fitsio
@@ -18,7 +27,17 @@ import sqlite3
 from astropy.table import Table
 from matplotlib.patches import Circle
 
-#### Define notebook wide functions and data paths to use:
+# If need to import basemaps, going to be a nightmare... thread lightly
+# CCL could also be an issue... Need to resolve eventually, works on HEP in pyCCL conda environment and on LSST_Stack
+
+
+#//////////////////////////////////////////// THINGS TO CHANGE FOR HEP /////////////////////////////////////////////////
+dataPath = '/Users/megantabbutt/CosmologyDataProducts/'
+# dataPath = '/afs/hep.wisc.edu/home/tabbutt/private/CosmologyDataProducts'
+
+
+#///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+# Define notebook wide functions and data paths to use:
 
 '''
 Convert from PanSTARRS data where RA is in "u.hourangle" and DEC is in "u.deg" to just degrees
@@ -36,100 +55,52 @@ def getRADecFromHourAngles(Dataframe, newDataFrame):
         newDataFrame['zHost'][i] = row['zHost']
 
 
-# In[ ]:
+#///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+# 1. Parse db files and query to get good objects:
 
 
-dataPath = '/Users/megantabbutt/CosmologyDataProducts/'
-
-PanSTARRS = pd.read_json( dataPath + 'PanSTARRS_Data.json', orient='columns' )
-PanSTARRSNEW = pd.DataFrame(columns = ['ID', 'RA', 'DEC', 'zSN', 'zHost'], index=PanSTARRS.index)
-getRADecFromHourAngles(PanSTARRS, PanSTARRSNEW) 
-PanSTARRSNEW.head(3) #1169 objects
-
-print("line 100/500")
 # Open a SQL Connection and pull out SNe data that has a good z for itsself or its host
 
 connPAN = sqlite3.connect(dataPath + 'PanSTARRS.db')
-#PanSTARRSNEW.to_sql("PanSTARRSNEW", con=connPAN) # Execute this if pd doesn't exist already
-
+#PanSTARRSNEW.to_sql("PanSTARRSNEW", con=connPAN) # ADD TO PARSING NOTEBOOK -- FIX
 qry = "SELECT ID, DEC, RA, zSN, zHost FROM PanSTARRSNEW WHERE (zSN > -999) || (zHost > -999)"
 PanSTARRSNEW_GoodZ = pd.read_sql(qry, con=connPAN)
-#PanSTARRSNEW_GoodZ.head(3) # 1129 objects over 10 pointings
-
-# Pull in the CMASS data from a fits file and delete some columns that are no good for pd dataframe:
-
-CMASSLOWZTOT_North_Tbl = Table.read(dataPath + 'galaxy_DR12v5_CMASSLOWZTOT_North.fits', format='fits')
-del CMASSLOWZTOT_North_Tbl['FRACPSF', 'EXPFLUX', 'DEVFLUX', 'PSFFLUX', 'MODELFLUX', 'FIBER2FLUX', 'R_DEV', 'EXTINCTION', 
-                           'PSF_FWHM', 'SKYFLUX', 'IMAGE_DEPTH', 'TILE', 'RERUN', 'CAMCOL', 'FIELD', 'ID', 'ICHUNK', 'RUN', 
-                          'IPOLY', 'AIRMASS', 'EB_MINUS_V', 'IMATCH', 'WEIGHT_FKP', 'WEIGHT_CP', 'WEIGHT_NOZ', 'WEIGHT_STAR',
-                          'WEIGHT_SEEING', 'WEIGHT_SYSTOT', 'COMP', 'PLATE', 'FIBERID', 'MJD', 'FINALN', 'SPECTILE', 'ICOLLIDED', 
-                          'INGROUP', 'MULTGROUP', 'ISECT']
-CMASSLOWZTOT_North_DF = CMASSLOWZTOT_North_Tbl.to_pandas()
-#CMASSLOWZTOT_North_DF.head(3)
+print("Good z PanSTARRS data: 1129 objects")
+print(PanSTARRSNEW_GoodZ.head(3)) # 1129 objects over 10 pointings
 
 
-CMASSLOWZTOT_South_Tbl = Table.read(dataPath + 'galaxy_DR12v5_CMASSLOWZTOT_South.fits', format='fits')
-del CMASSLOWZTOT_South_Tbl['FRACPSF', 'EXPFLUX', 'DEVFLUX', 'PSFFLUX', 'MODELFLUX', 'FIBER2FLUX', 'R_DEV', 'EXTINCTION', 
-                           'PSF_FWHM', 'SKYFLUX', 'IMAGE_DEPTH', 'TILE', 'RERUN', 'CAMCOL', 'FIELD', 'ID', 'ICHUNK', 'RUN', 
-                          'IPOLY', 'AIRMASS', 'EB_MINUS_V', 'IMATCH', 'WEIGHT_FKP', 'WEIGHT_CP', 'WEIGHT_NOZ', 'WEIGHT_STAR',
-                          'WEIGHT_SEEING', 'WEIGHT_SYSTOT', 'COMP', 'PLATE', 'FIBERID', 'MJD', 'FINALN', 'SPECTILE', 'ICOLLIDED', 
-                          'INGROUP', 'MULTGROUP', 'ISECT']
-CMASSLOWZTOT_South_DF = CMASSLOWZTOT_South_Tbl.to_pandas()
-#CMASSLOWZTOT_South_DF.head(3)
-
-# Open a SQL connection to union the four CMASS/LOWZ data sets together: 
+# Open a SQL connection to union the CMASS/LOWZ data sets together:
 
 connBOSS = sqlite3.connect(dataPath + 'CMASS_and_LOWZ.db')
 #CMASSLOWZTOT_South_DF.to_sql("CMASSLOWZTOT_South", con=connBOSS) # Execute these if .db doesn't exist yet
 #CMASSLOWZTOT_North_DF.to_sql("CMASSLOWZTOT_North", con=connBOSS) # Do one at a time to make sure all is good
-
 qry = "SELECT * FROM CMASSLOWZTOT_South UNION SELECT * FROM CMASSLOWZTOT_North"
 CMASSLOWZTOT_DF = pd.read_sql(qry, con=connBOSS)
-CMASSLOWZTOT_DF.head(3) # 1.3 million objects
+print("CMASS adn LOWZ data set unioned: 1.3M objects")
+print(CMASSLOWZTOT_DF.head(3)) # 1.3 million objects
 
-print("line 150/500")
-# #### Pull in the Randoms provided by CMASS:
 
-CMASSLOWZTOT_North_rand_Tbl = Table.read(dataPath + 'random0_DR12v5_CMASSLOWZTOT_North.fits', format='fits')
-del CMASSLOWZTOT_North_rand_Tbl['WEIGHT_FKP', 'IPOLY', 'ISECT', 'ZINDX', 'SKYFLUX', 'IMAGE_DEPTH', 
-                                'AIRMASS', 'EB_MINUS_V', 'PSF_FWHM']
-CMASSLOWZTOT_North_rand_Tbl
-CMASSLOWZTOT_North_rand_DF = CMASSLOWZTOT_North_rand_Tbl.to_pandas()
-CMASSLOWZTOT_North_rand_DF.head(3)
-
-print("completed pulling in north randoms")
-
-CMASSLOWZTOT_South_rand_Tbl = Table.read(dataPath + 'random0_DR12v5_CMASSLOWZTOT_South.fits', format='fits')
-del CMASSLOWZTOT_South_rand_Tbl['WEIGHT_FKP', 'IPOLY', 'ISECT', 'ZINDX', 'SKYFLUX', 'IMAGE_DEPTH', 
-                                'AIRMASS', 'EB_MINUS_V', 'PSF_FWHM']
-CMASSLOWZTOT_South_rand_Tbl
-CMASSLOWZTOT_South_rand_DF = CMASSLOWZTOT_South_rand_Tbl.to_pandas()
-CMASSLOWZTOT_South_rand_DF.head(3)
-
-print("completed pulling in South randoms")
+# Open a SQL connection to union the CMASS/LOWZ RANDOMS data sets together:
 
 connBOSSRands = sqlite3.connect(dataPath + 'CMASS_and_LOWZ_rands.db')
-#CMASSLOWZTOT_South_rand_DF.to_sql("CMASSLOWZTOT_South_rands", con=connBOSSRands) # Execute these if .db doesn't exist yet
-#CMASSLOWZTOT_North_rand_DF.to_sql("CMASSLOWZTOT_North_rands", con=connBOSSRands) # Do one at a time to make sure all is good
-
-print("completed sqlite connection opening: ")
-
-# In[ ]:
-
-
+#CMASSLOWZTOT_South_rand_DF.to_sql("CMASSLOWZTOT_South_rands", con=connBOSSRands) # ADD TO PARSING NOTEBOOK
+#CMASSLOWZTOT_North_rand_DF.to_sql("CMASSLOWZTOT_North_rands", con=connBOSSRands) # ADD TO PARSING NOTEBOOK
+# NOTE: index is a SQL keyword... BLAH
 randSampleQry = "SELECT * FROM CMASSLOWZTOT_South_rands WHERE `index` IN (SELECT `index` FROM CMASSLOWZTOT_South_rands ORDER BY RANDOM() LIMIT 10000) UNION SELECT * FROM CMASSLOWZTOT_North_rands WHERE `index` IN (SELECT `index` FROM CMASSLOWZTOT_North_rands ORDER BY RANDOM() LIMIT 10000)"
 randQry = "SELECT * FROM CMASSLOWZTOT_South_rands UNION SELECT * FROM CMASSLOWZTOT_North_rands"
 CMASSLOWZTOT_DF_rands = pd.read_sql(randSampleQry, con=connBOSSRands)
 CMASSLOWZTOT_DF_rands.to_json(dataPath + "CMASSLOWZTOT_DF_rands")
-CMASSLOWZTOT_DF_rands.head(3)
+print("CMASS adn LOWZ randoms data set opened: 20k objects")
+print(CMASSLOWZTOT_DF_rands.head(3))
 
 
-print("completed sqlite: ")
+# CLOSE THE CONNECTIONS ASAP:
 
 connBOSS.close()
 connBOSSRands.close()
+print("completed sqlite and closed connections. ")
 
-print("completed sqlite closing ")
+
 
 # ## 1. Create the TreeCorr Catalogs of Data:
 

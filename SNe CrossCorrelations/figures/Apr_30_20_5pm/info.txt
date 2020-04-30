@@ -1,0 +1,3 @@
+10**6 randoms for PanSTARRS, 
+
+limit 100,000 for CMASS

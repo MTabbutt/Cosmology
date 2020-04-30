@@ -14,6 +14,7 @@
 #///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 # Imports:
 
+import time
 import treecorr
 #import fitsio
 import numpy
@@ -38,10 +39,10 @@ from matplotlib.patches import Circle
 dataPath = '/afs/hep.wisc.edu/home/tabbutt/private/CosmologyDataProducts/'
 
 # Change this for HEP for more rands
-randsLength = 10**9
+randsLength = 10**6
 
 # Figures generated will go to this file
-dateName = 'Apr_29_20_5pm/' # need to make this...
+dateName = 'Apr_30_20_2pm/' # need to make this...
 
 #saveFigFolder = '/Users/megantabbutt/Cosmology/Cosmology/SNe CrossCorrelations/figures/' + dateName
 saveFigFolder =  '/afs/hep.wisc.edu/home/tabbutt/public/Cosmology/SNe CrossCorrelations/figures/' + dateName
@@ -94,16 +95,19 @@ print(CMASSLOWZTOT_DF.head(3)) # 1.3 million objects
 
 # Open a SQL connection to union the CMASS/LOWZ RANDOMS data sets together:
 
+print("starting to pull in CMASS randoms data with query 10,000")
+startTime = time.time()
 connBOSSRands = sqlite3.connect(dataPath + 'CMASS_and_LOWZ_rands.db')
 #CMASSLOWZTOT_South_rand_DF.to_sql("CMASSLOWZTOT_South_rands", con=connBOSSRands) # ADD TO PARSING NOTEBOOK
 #CMASSLOWZTOT_North_rand_DF.to_sql("CMASSLOWZTOT_North_rands", con=connBOSSRands) # ADD TO PARSING NOTEBOOK
 # NOTE: index is a SQL keyword... BLAH
 randSampleQry = "SELECT * FROM CMASSLOWZTOT_South_rands WHERE `index` IN (SELECT `index` FROM CMASSLOWZTOT_South_rands ORDER BY RANDOM() LIMIT 10000) UNION SELECT * FROM CMASSLOWZTOT_North_rands WHERE `index` IN (SELECT `index` FROM CMASSLOWZTOT_North_rands ORDER BY RANDOM() LIMIT 10000)"
 randQry = "SELECT * FROM CMASSLOWZTOT_South_rands UNION SELECT * FROM CMASSLOWZTOT_North_rands"
-CMASSLOWZTOT_DF_rands = pd.read_sql(randQry, con=connBOSSRands)
+CMASSLOWZTOT_DF_rands = pd.read_sql(randSampleQry, con=connBOSSRands)
 CMASSLOWZTOT_DF_rands.to_json(dataPath + "CMASSLOWZTOT_DF_rands")
 print("CMASS adn LOWZ randoms data set opened: 20k/___ objects")
 print(CMASSLOWZTOT_DF_rands.head(3))
+print("--- %s seconds ---" % (time.time() - startTime))
 
 
 # CLOSE THE CONNECTIONS ASAP:
@@ -139,10 +143,12 @@ dec_max_PanSTARRS = numpy.max(catPanSTARRS.dec)
 print('PanSTARRS ra range = %f .. %f' % (ra_min_PanSTARRS, ra_max_PanSTARRS))
 print('PanSTARRS dec range = %f .. %f' % (dec_min_PanSTARRS, dec_max_PanSTARRS))
 
+print("making the randoms in the sky")
+startTime = time.time()
 rand_ra_PanSTARRS = numpy.random.uniform(ra_min_PanSTARRS, ra_max_PanSTARRS, randsLength)
 rand_sindec_PanSTARRS = numpy.random.uniform(numpy.sin(dec_min_PanSTARRS), numpy.sin(dec_max_PanSTARRS), randsLength)
 rand_dec_PanSTARRS = numpy.arcsin(rand_sindec_PanSTARRS)
-
+print("--- %s seconds ---" % (time.time() - startTime))
 
 # MD02 is the one that needs to be eliminated, not in CMASS footprint
 pointings = {"MD01": [035.875, -04.250], "MD03": [130.592, 44.317], "MD04": [150.000, 02.200], 
@@ -184,6 +190,8 @@ plt.close()
 maskRA = []
 maskDEC = []
 
+print("sorting the randoms into pointings:")
+startTime = time.time()
 for pointing in pointings: 
     maskRAprevious = len(maskRA)
     X0 = pointings[pointing][0]
@@ -203,6 +211,8 @@ for pointing in pointings:
     print("Number of randoms in Pointing: ")
     print(len(maskRA) - maskRAprevious)
     print(" ")
+
+print("--- %s seconds ---" % (time.time() - startTime))
 
 
 # Check that the randoms cover the same space as the data

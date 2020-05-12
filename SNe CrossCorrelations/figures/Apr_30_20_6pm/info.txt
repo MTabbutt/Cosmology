@@ -1,1 +1,5 @@
-ssrtnkrnrknd
+# 10**7 total random objects for PanStarrs, 
+
+~3000 per pointing 1000-4000, 
+
+500,000 limit for SQL on CMASS for each data set. 

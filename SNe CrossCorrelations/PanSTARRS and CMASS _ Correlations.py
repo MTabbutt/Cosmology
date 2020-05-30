@@ -5,6 +5,7 @@
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #         Imports and formatting:
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 #plt.switch_backend('agg') #For HEP, matplotlib x windows issues see python version for more usage 
 import treecorr
@@ -19,6 +20,7 @@ import datetime
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #         Define notebook wide functions and data paths to use:
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Define the paths for local and HEP machines:
 DATA_PATH = '/Users/megantabbutt/CosmologyDataProducts/'
@@ -40,101 +42,103 @@ NOTES_PATH = TESTING_PRODUCTS_PATH + NOTES_NAME
 # Write an opening note in the file:
 NOTES = open(NOTES_PATH, "a")
 NOTES.write("Created Running notes file for tracking details about this run and products produced/saved")
-NOTES.write("\n")
-NOTES.write("\n")
+NOTES.write("\n \n")
 NOTES.close()
 
 
-"""
-# 
-# ## 0. Pull in and parse data:
-# 
-# note: There are 10 pointings for the PanSTARRS data, we will use all 10 for the Auto Correlation, but when we correlated to CMASS, we need to only use the 9 overlap with CMASS. --- IMPORTANT
 
-# #### PanSTARRS:
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#         0. Pull in and parse data:
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("0. Pull in and parse data:")
+NOTES.write("\n \n")
+NOTES.close()
 
-connPAN = sqlite3.connect(dataPath + 'PanSTARRS.db')
+# note: There are 10 pointings for the PanSTARRS data, we will use all 10 for the Auto Correlation,
+# # but when we correlated to CMASS, we need to only use the 9 overlap with CMASS. --- IMPORTANT
 
+# PanSTARRS:
+connPAN = sqlite3.connect(DATA_PATH + 'PanSTARRS.db')
 qry = "SELECT ID, DEC, RA, zSN, zHost FROM PanSTARRSNEW WHERE (zSN > -999) || (zHost > -999)"
-
 PanSTARRSNEW_GoodZ = pd.read_sql(qry, con=connPAN)
-PanSTARRSNEW_GoodZ.head(3) # 1129 objects over 10 pointings 
+print("PanSTARRSNEW_GoodZ: ") # 1129 objects over 10 pointings
+print(PanSTARRSNEW_GoodZ.head(3)) # 1129 objects over 10 pointings
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("PanSTARRSNEW_GoodZ Database (with 10 pointings) objects: " + str(len(PanSTARRSNEW_GoodZ)))
+NOTES.write("\n \n")
+NOTES.close()
+connPAN.close()
 
-
-# #### CMASS/LOWZ:
-
-# In[5]:
-
-
-connBOSS = sqlite3.connect(dataPath + 'CMASS_and_LOWZ.db')
-
+# CMASS/LOWZ:
+connBOSS = sqlite3.connect(DATA_PATH + 'CMASS_and_LOWZ.db')
 qry = "SELECT * FROM CMASSLOWZTOT_South UNION SELECT * FROM CMASSLOWZTOT_North"
-
 CMASSLOWZTOT_DF = pd.read_sql(qry, con=connBOSS)
-CMASSLOWZTOT_DF.head(3) # 1.3 million objects
-
-
-# #### Pull in the Randoms provided by CMASS:
-
-# In[6]:
-
-
-connBOSSRands = sqlite3.connect(dataPath + 'CMASS_and_LOWZ_rands.db')
-randSampleQry = "SELECT * FROM CMASSLOWZTOT_South_rands WHERE `index` IN (SELECT `index` FROM CMASSLOWZTOT_South_rands ORDER BY RANDOM() LIMIT 500000) UNION SELECT * FROM CMASSLOWZTOT_North_rands WHERE `index` IN (SELECT `index` FROM CMASSLOWZTOT_North_rands ORDER BY RANDOM() LIMIT 500000)"
-randQry = "SELECT * FROM CMASSLOWZTOT_South_rands UNION SELECT * FROM CMASSLOWZTOT_North_rands"
-
-CMASSLOWZTOT_DF_rands = pd.read_sql(randSampleQry, con=connBOSSRands)
-CMASSLOWZTOT_DF_rands.to_json(dataPath + "CMASSLOWZTOT_DF_rands")
-CMASSLOWZTOT_DF_rands.head(3)
-
-
-# In[7]:
-
-
+print("CMASSLOWZTOT_DF: ")
+print(CMASSLOWZTOT_DF.head(3)) # 1.3 million objects
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("CMASSLOWZTOT_DF Database objects: " + str(len(CMASSLOWZTOT_DF)))
+NOTES.write("\n \n")
+NOTES.close()
 connBOSS.close()
+
+# Randoms provided by CMASS:
+connBOSSRands = sqlite3.connect(DATA_PATH + 'CMASS_and_LOWZ_rands.db')
+randSampleQry = "SELECT * FROM CMASSLOWZTOT_South_rands WHERE `index` IN (SELECT `index` FROM CMASSLOWZTOT_South_rands ORDER BY RANDOM() LIMIT 500) UNION SELECT * FROM CMASSLOWZTOT_North_rands WHERE `index` IN (SELECT `index` FROM CMASSLOWZTOT_North_rands ORDER BY RANDOM() LIMIT 500)"
+#randQry = "SELECT * FROM CMASSLOWZTOT_South_rands UNION SELECT * FROM CMASSLOWZTOT_North_rands"
+CMASSLOWZTOT_DF_rands = pd.read_sql(randSampleQry, con=connBOSSRands)
+CMASSLOWZTOT_DF_rands.to_json(DATA_PATH + "CMASSLOWZTOT_DF_rands")
+print("CMASSLOWZTOT_DF_rands: ")
+print(CMASSLOWZTOT_DF_rands.head(3))
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("CMASSLOWZTOT_DF_rands Database objects: " + str(len(CMASSLOWZTOT_DF_rands)))
+NOTES.write("\n \n")
+NOTES.close()
 connBOSSRands.close()
 
 
-#  <hr style="height:3px"> 
-
-# ## 1. Create the TreeCorr Catalogs of Data:
-
-# A set of input data (positions and other quantities) to be correlated.
-# 
-# A Catalog object keeps track of the relevant information for a number of objects to be correlated. The objects each have some kind of position (for instance (x,y), (ra,dec), (x,y,z), etc.), and possibly some extra information such as weights (w), shear values (g1,g2), or kappa values (k).
-# 
-# The simplest way to build a Catalog is to simply pass in numpy arrays for each piece of information you want included. 
-# 
-# > cat = treecorr.Catalog(ra=ra, dec=dec, g1=g1, g2=g2, ra_units='hour', dec_units='deg')
-# 
-# Other options for reading in from a file, using a config file, etc
-
-# In[8]:
 
 
-catPanSTARRS = treecorr.Catalog(ra=PanSTARRSNEW_GoodZ['RA'], dec=PanSTARRSNEW_GoodZ['DEC'], ra_units='degrees', dec_units='degrees')
-catPanSTARRS
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#         1. Create the TreeCorr Catalogs of Data:
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("1. Create the TreeCorr Catalogs of Data:")
+NOTES.write("\n \n")
+NOTES.close()
+
+cat_PanSTARRS_Full = treecorr.Catalog(ra=PanSTARRSNEW_GoodZ['RA'], dec=PanSTARRSNEW_GoodZ['DEC'], ra_units='degrees', dec_units='degrees')
+print("cat_PanSTARRS_Full:")
+print(cat_PanSTARRS_Full)
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("Created cat_PanSTARRS_Full.")
+NOTES.write("\n \n")
+NOTES.close()
 
 
-# ## 2. Create the randoms for PanSTARRS
-# Include all ten pointings for now, can just exclude the pointing that isn't in CMASS when doing the CrossCorr </br>
-# 
-# Possibility to ask for mask eventually if we think that it is a limitation </br>
 
-# In[9]:
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#         2. Create the randoms for PanSTARRS
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("2. Create the randoms for PanSTARRS. Include all 10 pointings, delete MD02 later.")
+NOTES.write("\n \n")
+NOTES.close()
 
 # Change this for more and less, 10E5 good for personal laptop ~5min run time
 randsLength = 10**6
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("randsLength: " + str(randsLength))
+NOTES.write("\n \n")
+NOTES.close()
 
-
-# In[10]:
-
-
-ra_min_PanSTARRS = numpy.min(catPanSTARRS.ra)
-ra_max_PanSTARRS = numpy.max(catPanSTARRS.ra)
-dec_min_PanSTARRS = numpy.min(catPanSTARRS.dec)
-dec_max_PanSTARRS = numpy.max(catPanSTARRS.dec)
+# Create the random points in RA and Sin(DEC)
+ra_min_PanSTARRS = numpy.min(cat_PanSTARRS_Full.ra)
+ra_max_PanSTARRS = numpy.max(cat_PanSTARRS_Full.ra)
+dec_min_PanSTARRS = numpy.min(cat_PanSTARRS_Full.dec)
+dec_max_PanSTARRS = numpy.max(cat_PanSTARRS_Full.dec)
 print('PanSTARRS ra range = %f .. %f' % (ra_min_PanSTARRS, ra_max_PanSTARRS))
 print('PanSTARRS dec range = %f .. %f' % (dec_min_PanSTARRS, dec_max_PanSTARRS))
 
@@ -142,13 +146,8 @@ rand_ra_PanSTARRS = numpy.random.uniform(ra_min_PanSTARRS, ra_max_PanSTARRS, ran
 rand_sindec_PanSTARRS = numpy.random.uniform(numpy.sin(dec_min_PanSTARRS), numpy.sin(dec_max_PanSTARRS), randsLength)
 rand_dec_PanSTARRS = numpy.arcsin(rand_sindec_PanSTARRS)
 
-
-# #### Note: MD02 is the one that needs to be eliminated, not in CMASS footprint 
-
-# In[11]:
-
-
-# Got from a paper, need to cite it here:  https://arxiv.org/pdf/1612.05560.pdf
+"""
+# Got from a paper:  https://arxiv.org/pdf/1612.05560.pdf
 
 pointings = {"MD01": [035.875, -04.250], "MD03": [130.592, 44.317], "MD04": [150.000, 02.200], 
              "MD05": [161.917, 58.083], "MD06": [185.000, 47.117], "MD07": [213.704, 53.083], 

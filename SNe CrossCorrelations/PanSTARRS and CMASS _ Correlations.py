@@ -50,10 +50,12 @@ NOTES.close()
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #         0. Pull in and parse data:
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
 NOTES = open(NOTES_PATH, "a")
 NOTES.write("0. Pull in and parse data:")
 NOTES.write("\n \n")
 NOTES.close()
+
 
 # note: There are 10 pointings for the PanSTARRS data, we will use all 10 for the Auto Correlation,
 # # but when we correlated to CMASS, we need to only use the 9 overlap with CMASS. --- IMPORTANT
@@ -70,6 +72,7 @@ NOTES.write("\n \n")
 NOTES.close()
 connPAN.close()
 
+
 # CMASS/LOWZ:
 connBOSS = sqlite3.connect(DATA_PATH + 'CMASS_and_LOWZ.db')
 qry = "SELECT * FROM CMASSLOWZTOT_South UNION SELECT * FROM CMASSLOWZTOT_North"
@@ -81,6 +84,7 @@ NOTES.write("CMASSLOWZTOT_DF Database objects: " + str(len(CMASSLOWZTOT_DF)))
 NOTES.write("\n \n")
 NOTES.close()
 connBOSS.close()
+
 
 # Randoms provided by CMASS:
 connBOSSRands = sqlite3.connect(DATA_PATH + 'CMASS_and_LOWZ_rands.db')
@@ -108,6 +112,7 @@ NOTES.write("1. Create the TreeCorr Catalogs of Data:")
 NOTES.write("\n \n")
 NOTES.close()
 
+
 cat_PanSTARRS_Full = treecorr.Catalog(ra=PanSTARRSNEW_GoodZ['RA'], dec=PanSTARRSNEW_GoodZ['DEC'], ra_units='degrees', dec_units='degrees')
 print("cat_PanSTARRS_Full:")
 print(cat_PanSTARRS_Full)
@@ -127,12 +132,14 @@ NOTES.write("2. Create the randoms for PanSTARRS. Include all 10 pointings, dele
 NOTES.write("\n \n")
 NOTES.close()
 
+
 # Change this for more and less, 10E5 good for personal laptop ~5min run time
-randsLength = 10**6
+randsLength = 10**4
 NOTES = open(NOTES_PATH, "a")
 NOTES.write("randsLength: " + str(randsLength))
 NOTES.write("\n \n")
 NOTES.close()
+
 
 # Create the random points in RA and Sin(DEC)
 ra_min_PanSTARRS = numpy.min(cat_PanSTARRS_Full.ra)
@@ -146,59 +153,49 @@ rand_ra_PanSTARRS = numpy.random.uniform(ra_min_PanSTARRS, ra_max_PanSTARRS, ran
 rand_sindec_PanSTARRS = numpy.random.uniform(numpy.sin(dec_min_PanSTARRS), numpy.sin(dec_max_PanSTARRS), randsLength)
 rand_dec_PanSTARRS = numpy.arcsin(rand_sindec_PanSTARRS)
 
-"""
-# Got from a paper:  https://arxiv.org/pdf/1612.05560.pdf
 
+# Got from a paper:  https://arxiv.org/pdf/1612.05560.pdf
 pointings = {"MD01": [035.875, -04.250], "MD03": [130.592, 44.317], "MD04": [150.000, 02.200], 
              "MD05": [161.917, 58.083], "MD06": [185.000, 47.117], "MD07": [213.704, 53.083], 
              "MD08": [242.787, 54.950], "MD09": [334.188, 00.283], "MD10": [352.312, -00.433], "MD02": [053.100, -27.800],}
 
-
-# In[12]:
-
-
 # Check how well the randoms cover the same space as the data
-
 f1, (ax1a, ax2a, ax3a) = plt.subplots(1, 3, figsize=(20, 5))
-
-ax1a.scatter(catPanSTARRS.ra * 180/numpy.pi, catPanSTARRS.dec * 180/numpy.pi, color='red', s=0.1, marker='x')
+ax1a.scatter(cat_PanSTARRS_Full.ra * 180/numpy.pi, cat_PanSTARRS_Full.dec * 180/numpy.pi, color='red', s=0.1, marker='x')
 ax1a.scatter(rand_ra_PanSTARRS * 180/numpy.pi, rand_dec_PanSTARRS * 180/numpy.pi, color='blue', s=0.1)
 ax1a.set_xlabel('RA (degrees)')
 ax1a.set_ylabel('Dec (degrees)')
 ax1a.set_title('Randoms on top of data')
-
 # Repeat in the opposite order
 ax2a.scatter(rand_ra_PanSTARRS * 180/numpy.pi, rand_dec_PanSTARRS * 180/numpy.pi, color='blue', s=0.1, marker='x')
-ax2a.scatter(catPanSTARRS.ra * 180/numpy.pi, catPanSTARRS.dec * 180/numpy.pi, color='red', s=0.1)
+ax2a.scatter(cat_PanSTARRS_Full.ra * 180/numpy.pi, cat_PanSTARRS_Full.dec * 180/numpy.pi, color='red', s=0.1)
 ax2a.set_xlabel('RA (degrees)')
 ax2a.set_ylabel('Dec (degrees)')
 ax2a.set_title('Data on top of randoms')
-
 # Zoom to look at coverage of randoms and reals
 ax3a.scatter(rand_ra_PanSTARRS * 180/numpy.pi, rand_dec_PanSTARRS * 180/numpy.pi, color='blue', s=1, marker='x', label='rands')
-ax3a.scatter(catPanSTARRS.ra * 180/numpy.pi, catPanSTARRS.dec * 180/numpy.pi, color='red', s=1, label='data')
+ax3a.scatter(cat_PanSTARRS_Full.ra * 180/numpy.pi, cat_PanSTARRS_Full.dec * 180/numpy.pi, color='red', s=1, label='data')
 ax3a.set_xlabel('RA (degrees)')
 ax3a.set_ylabel('Dec (degrees)')
 ax3a.set_title('Data on top of randoms_Zoom')
 ax3a.legend(loc = "upper right")
-ax3a.set_xlim(129, 133)
-ax3a.set_ylim(42, 46)
-
+ax3a.set_xlim(128, 133)
+ax3a.set_ylim(42, 47)
+plt.savefig(TESTING_PRODUCTS_PATH + "/PanSTARRS data and randoms")
 plt.show()
-
-
-# "The telescope illuminates a diameter of 3.3 degrees,  with low distortion, and mild vignetting at the edge of this illuminated region. The field of view is approximately 7 square degrees. The 8  meter  focal  length  atf/4.4  gives  an  approximate  10micron pixel scale of 0.258 arcsec/pixel."
-# 
-# 7 square degrees --> r = 1.49 deg
-
-# In[13]:
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("Plotted: PanSTARRS data and randoms")
+NOTES.write("\n \n")
+NOTES.close()
 
 
 # Make a mask that consists of the ten pointings populated with the randoms that are in it...
-# Def a better way to do this? 
-
+# Def a better way to do this?
 maskRA = []
 maskDEC = []
+randoms_Lengths = []
+
+print("Populating pointings with randoms: ")
 
 for pointing in pointings: 
     maskRAprevious = len(maskRA)
@@ -216,110 +213,61 @@ for pointing in pointings:
             maskRA.append(X)
             maskDEC.append(Y)
     print(len(maskRA) - maskRAprevious)
+    randoms_Lengths.append(len(maskRA) - maskRAprevious)
+
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("Populated pointings with randoms. Randoms per pointing: (1, 3-10, 2):")
+NOTES.write(str(randoms_Lengths))
+NOTES.write("\n \n")
+NOTES.close()
 
 
-# In[14]:
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#         3. Make PanSTARRS Count-Count Auto Correlation Functions:
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-f2, (ax1b, ax2b, ax3b) = plt.subplots(1, 3, figsize=(20,5))
-
-ax1b.scatter(catPanSTARRS.ra * 180/numpy.pi, catPanSTARRS.dec * 180/numpy.pi, color='red', s=0.1, marker='x')
-ax1b.scatter(maskRA, maskDEC, color='blue', s=0.1)
-ax1b.set_xlabel('RA (degrees)')
-ax1b.set_ylabel('Dec (degrees)')
-ax1b.set_title('Randoms on top of data with Mask')
-
-# Repeat in the opposite order
-ax2b.scatter(maskRA, maskDEC, color='blue', s=0.1)
-ax2b.scatter(catPanSTARRS.ra * 180/numpy.pi, catPanSTARRS.dec * 180/numpy.pi, color='red', s=0.1, marker='x')
-ax2b.set_xlabel('RA (degrees)')
-ax2b.set_ylabel('Dec (degrees)')
-ax2b.set_title('Data on top of randoms with Mask')
-
-# Zoom to look at coverage of randoms and reals
-ax3b.scatter(maskRA, maskDEC, color='blue', s=1, marker='x', label='rands_mask')
-ax3b.scatter(catPanSTARRS.ra * 180/numpy.pi, catPanSTARRS.dec * 180/numpy.pi, color='red', s=1, label='data')
-ax3b.set_xlabel('RA (degrees)')
-ax3b.set_ylabel('Dec (degrees)')
-ax3b.set_title('Data on top of randoms with mask_Zoom')
-ax3b.legend(loc = "upper right")
-ax3b.set_xlim(128, 133)
-ax3b.set_ylim(42, 47)
-
-plt.show()
-
-
-# ## 3. Make PanSTARRS Count-Count Auto Correlation Functions:
-# 
-# Typical Usage Pattern:
-# 
-# > nn = treecorr.NNCorrelation(config) 
-# <br>
-# nn.process(cat)     # For auto-correlation.
-# <br>
-# nn.process(cat1,cat2)   # For cross-correlation.
-# <br>
-# rr.process...           # Likewise for random-random correlations
-# <br>
-# dr.process...        # If desired, also do data-random correlations
-# <br>
-# rd.process...    # For cross-correlations, also do the reverse.
-# <br>
-# nn.write(file_name,rr,dr,rd)  # Write out to a file.
-# <br>
-# xi,varxi = nn.calculateXi(rr,dr,rd)  # Or get the correlation function directly.
-
-# In[15]:
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("3. Make PanSTARRS Count-Count Auto Correlation Functions:")
+NOTES.write("\n \n")
+NOTES.close()
 
 
 # Data Auto-correlation: (dd)
-ddPanSTARRS = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
-ddPanSTARRS.process(catPanSTARRS)
+nn_PanSTARRS_Auto_self = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+nn_PanSTARRS_Auto_self.process(cat_PanSTARRS_Full)
 
+cat_rand_PanSTARRS_Full = treecorr.Catalog(ra=maskRA, dec=maskDEC, ra_units='degrees', dec_units='degrees')
+rr_PanSTARRS_Full = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+rr_PanSTARRS_Full.process(cat_rand_PanSTARRS_Full)
 
-# In[16]:
+dr_PanSTARRS_Full = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+dr_PanSTARRS_Full.process(cat_PanSTARRS_Full, cat_rand_PanSTARRS_Full)
 
-
-rand = treecorr.Catalog(ra=maskRA, dec=maskDEC, ra_units='degrees', dec_units='degrees')
-rr = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
-rr.process(rand)
-
-
-# In[17]:
-
-
-dr = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
-dr.process(catPanSTARRS, rand)
-
-
-# In[18]:
-
-
-r = numpy.exp(ddPanSTARRS.meanlogr)
-xi, varxi = ddPanSTARRS.calculateXi(rr, dr)
-sig = numpy.sqrt(varxi)
-
-
-# In[19]:
+r_PanSTARRS_Full = numpy.exp(nn_PanSTARRS_Auto_self.meanlogr)
+xi_PanSTARRS_Full, varxi_PanSTARRS_Full = nn_PanSTARRS_Auto_self.calculateXi(rr_PanSTARRS_Full, dr_PanSTARRS_Full)
+sig_PanSTARRS_Full = numpy.sqrt(varxi_PanSTARRS_Full)
 
 
 # Plot the Correlation function:
-
-plt.plot(r, xi, color='blue')
-plt.plot(r, -xi, color='blue', ls=':')
-plt.errorbar(r[xi>0], xi[xi>0], yerr=sig[xi>0], color='green', lw=0.5, ls='')
-plt.errorbar(r[xi<0], -xi[xi<0], yerr=sig[xi<0], color='green', lw=0.5, ls='')
-leg = plt.errorbar(-r, xi, yerr=sig, color='blue')
-
+plt.plot(r_PanSTARRS_Full, xi_PanSTARRS_Full, color='blue')
+plt.plot(r_PanSTARRS_Full, -xi_PanSTARRS_Full, color='blue', ls=':')
+plt.errorbar(r_PanSTARRS_Full[xi_PanSTARRS_Full>0], xi_PanSTARRS_Full[xi_PanSTARRS_Full>0], yerr=sig_PanSTARRS_Full[xi_PanSTARRS_Full>0], color='green', lw=0.5, ls='')
+plt.errorbar(r_PanSTARRS_Full[xi_PanSTARRS_Full<0], -xi_PanSTARRS_Full[xi_PanSTARRS_Full<0], yerr=sig_PanSTARRS_Full[xi_PanSTARRS_Full<0], color='green', lw=0.5, ls='')
+leg = plt.errorbar(-r_PanSTARRS_Full, xi_PanSTARRS_Full, yerr=sig_PanSTARRS_Full, color='blue')
 plt.xscale('log')
 plt.yscale('log', nonposy='clip')
 plt.xlabel(r'$\theta$ (degrees)')
-
 plt.legend([leg], [r'$w(\theta)$'], loc='lower left')
 plt.xlim([0.01,10])
+plt.savefig(TESTING_PRODUCTS_PATH + "/PanSTARRS Auto-Corr with PanSTARRS randoms")
 plt.show()
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("Plotted: PanSTARRS Auto-Corr with PanSTARRS randoms")
+NOTES.write("\n \n")
+NOTES.close()
 
-
+"""
 # ## 4. Make CMASS Count-Count Auto Correlation Functions:
 # 
 # Typical Usage Pattern:

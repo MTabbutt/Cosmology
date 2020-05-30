@@ -14,3 +14,13 @@ Created cat_PanSTARRS_Full.
  
 2. Create the randoms for PanSTARRS. Include all 10 pointings, delete MD02 later.
  
+randsLength: 10000
+ 
+Plotted: PanSTARRS data and randoms
+ 
+Populated pointings with randoms. Randoms per pointing: (1, 3-10, 2):[5, 0, 2, 1, 0, 1, 1, 2, 6, 5]
+ 
+3. Make PanSTARRS Count-Count Auto Correlation Functions:
+ 
+Plotted: PanSTARRS Auto-Corr with PanSTARRS randoms
+ 

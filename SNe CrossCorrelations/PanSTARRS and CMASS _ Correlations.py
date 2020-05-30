@@ -1,71 +1,57 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# <Strong> Note to the reader: </Strong> This notebook currently calculates the Auto count-count correlations of the PanSTARRS data and CMASS/LOWZ data. See notes on fixes and future things. </br>
-# 
-# Annotations about TreeCorr are taken from the documentation and all credit goes to Mike Jarvis. </br>
-# 
-# https://rmjarvis.github.io/TreeCorr/_build/html/overview.html </br>
-# 
-# -MT 5/14/20 9am
+# I DONT WORK ON WINDOWS... REWRITE WITH .os.join things if doing that...
 
-# #### List of changes/fixes that are not resolved: 
-# 
-# - Data for panstarrs is outside the pointing? --- NEED TO INVESTIGATE 
-# - Corr func asymptotes to .2 instead of zero? Ross: Look as CMASS and LOWZ auto corr to check for zero corr function. --- NEED TO DO 
-# - Theory calculuation for CMASS plots --- COULD DO 
-# - Better way to populate the randoms into the mask? Apply the mask over top? --- FIX ME
-
-# ### Imports and formatting: 
-
-# In[1]:
-
-
-# Make Jupyter Notebook full screen 
-from IPython.core.display import display, HTML
-display(HTML("<style>.container { width:100% !important; }</style>"))
-from IPython.display import Image
-
-
-# In[2]:
-
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#         Imports and formatting:
 
 #plt.switch_backend('agg') #For HEP, matplotlib x windows issues see python version for more usage 
 import treecorr
 import numpy
-import matplotlib
 import matplotlib.pyplot as plt
 import pandas as pd
 import sqlite3
+import os
+import datetime
 
 
-# ### Define notebook wide functions and data paths to use:
 
-# In[3]:
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#         Define notebook wide functions and data paths to use:
 
-
-dataPath = '/Users/megantabbutt/CosmologyDataProducts/'
+# Define the paths for local and HEP machines:
+DATA_PATH = '/Users/megantabbutt/CosmologyDataProducts/'
 #dataPath = '/afs/hep.wisc.edu/home/tabbutt/private/CosmologyDataProducts/'
 
-testingProductsPath = "/Users/megantabbutt/Cosmology/Cosmology/SNe CrossCorrelations/VerificationTestingProducts/"
+TESTING_PRODUCTS_PATH = "/Users/megantabbutt/Cosmology/Cosmology/SNe CrossCorrelations/VerificationTestingProducts/"
+# Add HEP testing path
 
-# Python has datename, savfig folder fields, usually don't save this code just for monkeying around... 
-# If wanted to save some plots, should invoke this, and add text file to the folder with notes for that run 
+# Create the directory to save to and a file with info about this run:
+DATE = datetime.datetime.now().strftime("%d_%m_%Y_%H_%M")
+CURRENT_DIRECTORY = DATE
+TESTING_PRODUCTS_PATH = TESTING_PRODUCTS_PATH + CURRENT_DIRECTORY
 
-date = ' 05_29_20_12pm'
+os.mkdir(TESTING_PRODUCTS_PATH)
+
+NOTES_NAME = "/RUNNING_NOTES_" + DATE + ".txt"
+NOTES_PATH = TESTING_PRODUCTS_PATH + NOTES_NAME
+
+# Write an opening note in the file:
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("Created Running notes file for tracking details about this run and products produced/saved")
+NOTES.write("\n")
+NOTES.write("\n")
+NOTES.close()
 
 
-#  <hr style="height:3px"> 
-
+"""
 # 
 # ## 0. Pull in and parse data:
 # 
 # note: There are 10 pointings for the PanSTARRS data, we will use all 10 for the Auto Correlation, but when we correlated to CMASS, we need to only use the 9 overlap with CMASS. --- IMPORTANT
 
-# #### PanSTARRS: 
-
-# In[4]:
-
+# #### PanSTARRS:
 
 connPAN = sqlite3.connect(dataPath + 'PanSTARRS.db')
 
@@ -936,14 +922,6 @@ ax2b.set_ylabel('Dec (degrees)')
 plt.show()
 
 
-# In[ ]:
 
 
-
-
-
-# In[ ]:
-
-
-
-
+"""

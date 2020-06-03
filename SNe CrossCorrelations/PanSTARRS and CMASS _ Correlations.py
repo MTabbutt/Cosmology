@@ -561,7 +561,6 @@ NOTES.close()
 connPANoverlap.close()
 
 
-
 cat_PanSTARRS_overlap = treecorr.Catalog(ra=PanSTARRSNEW_GoodZ_ovelap['RA'], dec=PanSTARRSNEW_GoodZ_ovelap['DEC'], ra_units='degrees', dec_units='degrees')
 
 nn_Pan_xCorr_eBOSS = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
@@ -601,6 +600,100 @@ plt.savefig(TESTING_PRODUCTS_PATH + "/PanSTARRS cross Correlation with eBOSS")
 plt.close()
 NOTES = open(NOTES_PATH, "a")
 NOTES.write("Plotted: PanSTARRS cross Correlation with eBOSS")
+NOTES.write("\n \n")
+NOTES.close()
+
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#         5.3 Auto Correlate CMASS randoms and CMASS randoms:
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("5.3 Auto Correlate CMASS randoms and CMASS randoms:")
+NOTES.write("\n \n")
+NOTES.close()
+
+
+connCMASSRands = sqlite3.connect(DATA_PATH + 'CMASS_rands.db')
+randSampleQry = "SELECT * FROM CMASS_South_rands WHERE `index` IN (SELECT `index` FROM CMASS_South_rands ORDER BY RANDOM() LIMIT 50000) UNION SELECT * FROM CMASS_North_rands WHERE `index` IN (SELECT `index` FROM CMASS_North_rands ORDER BY RANDOM() LIMIT 50000)"
+CMASS_DF_rands_Sample1 = pd.read_sql(randSampleQry, con=connCMASSRands)
+CMASS_DF_rands_Sample1.to_json(DATA_PATH + "CMASS_DF_rands")
+print("CMASS_DF_rands_Sample1: ")
+print(CMASS_DF_rands_Sample1.head(3)) # 1.3 million objects
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("CMASS_DF_rands_Sample1 Database objects: " + str(len(CMASS_DF_rands_Sample1)))
+NOTES.write("\n \n")
+NOTES.close()
+connCMASSRands.close()
+
+connCMASSRands = sqlite3.connect(DATA_PATH + 'CMASS_rands.db')
+randSampleQry = "SELECT * FROM CMASS_South_rands WHERE `index` IN (SELECT `index` FROM CMASS_South_rands ORDER BY RANDOM() LIMIT 50000) UNION SELECT * FROM CMASS_North_rands WHERE `index` IN (SELECT `index` FROM CMASS_North_rands ORDER BY RANDOM() LIMIT 50000)"
+CMASS_DF_rands_Sample2 = pd.read_sql(randSampleQry, con=connCMASSRands)
+CMASS_DF_rands.to_json(DATA_PATH + "CMASS_DF_rands_Sample2")
+print("CMASS_DF_rands_Sample2: ")
+print(CMASS_DF_rands_Sample2.head(3)) # 1.3 million objects
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("CMASS_DF_rands_Sample2 Database objects: " + str(len(CMASS_DF_rands_Sample2)))
+NOTES.write("\n \n")
+NOTES.close()
+connCMASSRands.close()
+
+
+cat_CMASS_rands_sample1 = treecorr.Catalog(ra=CMASS_DF_rands_Sample1['RA'], dec=CMASS_DF_rands_Sample1['DEC'], ra_units='degrees', dec_units='degrees')
+cat_CMASS_rands_sample1
+
+nn_CMASS_Auto_CMASSRands = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+nn_CMASS_Auto_CMASSRands.process(cat_CMASS_rands_sample1)
+
+cat_CMASS_rands_sample2 = treecorr.Catalog(ra=CMASS_DF_rands_Sample2['RA'], dec=CMASS_DF_rands_Sample2['DEC'], ra_units='degrees', dec_units='degrees')
+rr_CMASS_Auto_CMASSRands = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+rr_CMASS_Auto_CMASSRands.process(cat_CMASS_rands_sample2)
+
+dr_CMASS_Auto_CMASSRands = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+dr_CMASS_Auto_CMASSRands.process(cat_CMASS_rands_sample1, cat_CMASS_rands_sample2)
+
+r_CMASS_Auto_CMASSRands = numpy.exp(nn_CMASS_Auto_CMASSRands.meanlogr)
+xi_CMASS_Auto_CMASSRands, varxi_CMASS_Auto_CMASSRands = nn_CMASS_Auto_CMASSRands.calculateXi(rr_CMASS_Auto_CMASSRands, dr_CMASS_Auto_CMASSRands)
+sig_CMASS_Auto_CMASSRands = numpy.sqrt(varxi_CMASS_Auto_CMASSRands)
+
+
+# Check that the randoms cover the same space as the data
+f4, (ax1d) = plt.subplots(1, 1, figsize=(10, 10))
+ax1d.scatter(cat_CMASS_rands.ra * 180/numpy.pi, cat_CMASS_rands.dec * 180/numpy.pi, color='blue', s=0.1)
+ax1d.set_xlabel('RA (degrees)')
+ax1d.set_ylabel('Dec (degrees)')
+ax1d.set_title('CMASS Randoms')
+ax1d.set_xlim(128, 133)
+ax1d.set_ylim(42, 47)
+plt.title("CMASS and CMASS randoms")
+plt.savefig(TESTING_PRODUCTS_PATH + "/CMASS and CMASS randoms")
+#plt.show()
+plt.close()
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("Plotted: CMASS and CMASS randoms")
+NOTES.write("\n \n")
+NOTES.close()
+
+
+# Plot the autocorrelation function:
+plt.plot(r_CMASS_Auto_CMASSRands, xi_CMASS_Auto_CMASSRands, color='blue')
+plt.plot(r_CMASS_Auto_CMASSRands, -xi_CMASS_Auto_CMASSRands, color='blue', ls=':')
+plt.errorbar(r_CMASS_Auto_CMASSRands[xi_CMASS_Auto_CMASSRands>0], xi_CMASS_Auto_CMASSRands[xi_CMASS_Auto_CMASSRands>0], yerr=sig_CMASS_Auto_CMASSRands[xi_CMASS_Auto_CMASSRands>0], color='green', lw=0.5, ls='')
+plt.errorbar(r_CMASS_Auto_CMASSRands[xi_CMASS_Auto_CMASSRands<0], -xi_CMASS_Auto_CMASSRands[xi_CMASS_Auto_CMASSRands<0], yerr=sig_CMASS_Auto_CMASSRands[xi_CMASS_Auto_CMASSRands<0], color='green', lw=0.5, ls='')
+leg = plt.errorbar(-r_CMASS_Auto_CMASSRands, xi_CMASS_Auto_CMASSRands, yerr=sig_CMASS_Auto_CMASSRands, color='blue')
+plt.xscale('log')
+plt.yscale('log', nonposy='clip')
+plt.xlabel(r'$\theta$ (degrees)')
+plt.legend([leg], [r'$w(\theta)$'], loc='lower left')
+#plt.xlim([0.01,10])
+#plt.ylim([0.0, .00001])
+plt.title("CMASS_rands Auto Corr with CMASS_rands as randoms")
+plt.savefig(TESTING_PRODUCTS_PATH + "/CMASS_rands Auto Corr with CMASS_rands as randoms")
+#plt.show()
+plt.close()
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("Plotted: CMASS_rands Auto Corr with CMASS_rands as randoms")
 NOTES.write("\n \n")
 NOTES.close()
 

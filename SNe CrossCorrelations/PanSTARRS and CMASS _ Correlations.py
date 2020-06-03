@@ -660,7 +660,8 @@ sig_CMASS_Auto_CMASSRands = numpy.sqrt(varxi_CMASS_Auto_CMASSRands)
 
 # Check that the randoms cover the same space as the data
 f4, (ax1d) = plt.subplots(1, 1, figsize=(10, 10))
-ax1d.scatter(cat_CMASS_rands.ra * 180/numpy.pi, cat_CMASS_rands.dec * 180/numpy.pi, color='blue', s=0.1)
+ax1d.scatter(cat_CMASS_rands_sample1.ra * 180/numpy.pi, cat_CMASS_rands_sample1.dec * 180/numpy.pi, color='blue', s=0.1)
+ax1d.scatter(cat_CMASS_rands_sample2.ra * 180/numpy.pi, cat_CMASS_rands_sample2.dec * 180/numpy.pi, color='green', s=0.1)
 ax1d.set_xlabel('RA (degrees)')
 ax1d.set_ylabel('Dec (degrees)')
 ax1d.set_title('CMASS Randoms')
@@ -694,6 +695,101 @@ plt.savefig(TESTING_PRODUCTS_PATH + "/CMASS_rands Auto Corr with CMASS_rands as 
 plt.close()
 NOTES = open(NOTES_PATH, "a")
 NOTES.write("Plotted: CMASS_rands Auto Corr with CMASS_rands as randoms")
+NOTES.write("\n \n")
+NOTES.close()
+
+
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#         5.4 Auto Correlate LOWZ randoms and LOWZ randoms:
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("5.3 Auto Correlate LOWZ randoms and LOWZ randoms:")
+NOTES.write("\n \n")
+NOTES.close()
+
+
+connLOWZRands = sqlite3.connect(DATA_PATH + 'LOWZ_rands.db')
+randSampleQry = "SELECT * FROM LOWZ_South_rands WHERE `index` IN (SELECT `index` FROM LOWZ_South_rands ORDER BY RANDOM() LIMIT 50000) UNION SELECT * FROM LOWZ_North_rands WHERE `index` IN (SELECT `index` FROM LOWZ_North_rands ORDER BY RANDOM() LIMIT 50000)"
+LOWZ_DF_rands_Sample1 = pd.read_sql(randSampleQry, con=connLOWZRands)
+LOWZ_DF_rands_Sample1.to_json(DATA_PATH + "LOWZ_DF_rands")
+print("LOWZ_DF_rands_Sample1: ")
+print(LOWZ_DF_rands_Sample1.head(3)) # 1.3 million objects
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("LOWZ_DF_rands_Sample1 Database objects: " + str(len(LOWZ_DF_rands_Sample1)))
+NOTES.write("\n \n")
+NOTES.close()
+connCMASSRands.close()
+
+connLOWZRands = sqlite3.connect(DATA_PATH + 'LOWZ_rands.db')
+randSampleQry = "SELECT * FROM LOWZ_South_rands WHERE `index` IN (SELECT `index` FROM LOWZ_South_rands ORDER BY RANDOM() LIMIT 50000) UNION SELECT * FROM LOWZ_North_rands WHERE `index` IN (SELECT `index` FROM LOWZ_North_rands ORDER BY RANDOM() LIMIT 50000)"
+LOWZ_DF_rands_Sample2 = pd.read_sql(randSampleQry, con=connLOWZRands)
+LOWZ_DF_rands.to_json(DATA_PATH + "LOWZ_DF_rands_Sample2")
+print("LOWZ_DF_rands_Sample2: ")
+print(LOWZ_DF_rands_Sample2.head(3)) # 1.3 million objects
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("LOWZ_DF_rands_Sample2 Database objects: " + str(len(LOWZ_DF_rands_Sample2)))
+NOTES.write("\n \n")
+NOTES.close()
+connCMASSRands.close()
+
+
+cat_LOWZ_rands_sample1 = treecorr.Catalog(ra=LOWZ_DF_rands_Sample1['RA'], dec=LOWZ_DF_rands_Sample1['DEC'], ra_units='degrees', dec_units='degrees')
+cat_LOWZ_rands_sample1
+
+nn_LOWZ_Auto_LOWZRands = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+nn_LOWZ_Auto_LOWZRands.process(cat_LOWZ_rands_sample1)
+
+cat_LOWZ_rands_sample2 = treecorr.Catalog(ra=CMASS_DF_rands_Sample2['RA'], dec=CMASS_DF_rands_Sample2['DEC'], ra_units='degrees', dec_units='degrees')
+rr_LOWZ_Auto_LOWZRands = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+rr_LOWZ_Auto_LOWZRands.process(cat_LOWZ_rands_sample2)
+
+dr_LOWZ_Auto_LOWZRands = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+dr_LOWZ_Auto_LOWZRands.process(cat_LOWZ_rands_sample1, cat_LOWZ_rands_sample2)
+
+r_LOWZ_Auto_LOWZRands = numpy.exp(nn_LOWZ_Auto_LOWZRands.meanlogr)
+xi_LOWZ_Auto_LOWZRands, varxi_LOWZ_Auto_LOWZRands = nn_LOWZ_Auto_LOWZRands.calculateXi(rr_LOWZ_Auto_LOWZRands, dr_LOWZ_Auto_LOWZRands)
+sig_LOWZ_Auto_LOWZRands = numpy.sqrt(varxi_LOWZ_Auto_LOWZRands)
+
+
+# Check that the randoms cover the same space as the data
+f4, (ax1d) = plt.subplots(1, 1, figsize=(10, 10))
+ax1d.scatter(cat_LOWZ_rands_sample1.ra * 180/numpy.pi, cat_LOWZ_rands_sample1.dec * 180/numpy.pi, color='blue', s=0.1)
+ax1d.scatter(cat_LOWZ_rands_sample2.ra * 180/numpy.pi, cat_LOWZ_rands_sample2.dec * 180/numpy.pi, color='green', s=0.1)
+ax1d.set_xlabel('RA (degrees)')
+ax1d.set_ylabel('Dec (degrees)')
+ax1d.set_title('CMASS Randoms')
+ax1d.set_xlim(128, 133)
+ax1d.set_ylim(42, 47)
+plt.title("LOWZ and LOWZ randoms")
+plt.savefig(TESTING_PRODUCTS_PATH + "/LOWZ and LOWZ randoms")
+#plt.show()
+plt.close()
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("Plotted: LOWZ and LOWZ randoms")
+NOTES.write("\n \n")
+NOTES.close()
+
+
+# Plot the autocorrelation function:
+plt.plot(r_LOWZ_Auto_LOWZRands, xi_LOWZ_Auto_LOWZRands, color='blue')
+plt.plot(r_LOWZ_Auto_LOWZRands, -xi_LOWZ_Auto_LOWZRands, color='blue', ls=':')
+plt.errorbar(r_LOWZ_Auto_LOWZRands[xi_LOWZ_Auto_LOWZRands>0], xi_LOWZ_Auto_LOWZRands[xi_LOWZ_Auto_LOWZRands>0], yerr=sig_LOWZ_Auto_LOWZRands[xi_LOWZ_Auto_LOWZRands>0], color='green', lw=0.5, ls='')
+plt.errorbar(r_LOWZ_Auto_LOWZRands[xi_LOWZ_Auto_LOWZRands<0], -xi_LOWZ_Auto_LOWZRands[xi_LOWZ_Auto_LOWZRands<0], yerr=sig_LOWZ_Auto_LOWZRands[xi_LOWZ_Auto_LOWZRands<0], color='green', lw=0.5, ls='')
+leg = plt.errorbar(-r_LOWZ_Auto_LOWZRands, xi_LOWZ_Auto_LOWZRands, yerr=sig_LOWZ_Auto_LOWZRands, color='blue')
+plt.xscale('log')
+#plt.yscale('log', nonposy='clip')
+plt.xlabel(r'$\theta$ (degrees)')
+plt.legend([leg], [r'$w(\theta)$'], loc='lower left')
+#plt.xlim([0.01,10])
+#plt.ylim([0.0, .00001])
+plt.title("LOWZ_rands Auto Corr with LOWZ_rands as randoms")
+plt.savefig(TESTING_PRODUCTS_PATH + "/LOWZ_rands Auto Corr with LOWZ_rands as randoms")
+#plt.show()
+plt.close()
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("Plotted: LOWZ_rands Auto Corr with LOWZ_rands as randoms")
 NOTES.write("\n \n")
 NOTES.close()
 

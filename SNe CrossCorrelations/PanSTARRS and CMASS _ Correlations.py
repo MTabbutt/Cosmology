@@ -11,6 +11,7 @@
 import treecorr
 import numpy
 import matplotlib.pyplot as plt
+plt.switch_backend('agg')
 import pandas as pd
 import sqlite3
 import os
@@ -23,11 +24,11 @@ import datetime
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Define the paths for local and HEP machines:
-DATA_PATH = '/Users/megantabbutt/CosmologyDataProducts/'
-#dataPath = '/afs/hep.wisc.edu/home/tabbutt/private/CosmologyDataProducts/'
+#DATA_PATH = '/Users/megantabbutt/CosmologyDataProducts/'
+DATA_PATH = '/afs/hep.wisc.edu/home/tabbutt/private/CosmologyDataProducts/'
 
-TESTING_PRODUCTS_PATH = "/Users/megantabbutt/Cosmology/Cosmology/SNe CrossCorrelations/VerificationTestingProducts/"
-# Add HEP testing path
+#TESTING_PRODUCTS_PATH = "/Users/megantabbutt/Cosmology/Cosmology/SNe CrossCorrelations/VerificationTestingProducts/"
+TESTING_PRODUCTS_PATH = "/afs/hep.wisc.edu/home/tabbutt/public/Cosmology/SNe CrossCorrelations/VerificationTestingProducts"
 
 # Create the directory to save to and a file with info about this run:
 DATE = datetime.datetime.now().strftime("%d_%m_%Y_%H_%M")

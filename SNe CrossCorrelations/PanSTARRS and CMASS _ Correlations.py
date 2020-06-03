@@ -683,7 +683,7 @@ plt.errorbar(r_CMASS_Auto_CMASSRands[xi_CMASS_Auto_CMASSRands>0], xi_CMASS_Auto_
 plt.errorbar(r_CMASS_Auto_CMASSRands[xi_CMASS_Auto_CMASSRands<0], -xi_CMASS_Auto_CMASSRands[xi_CMASS_Auto_CMASSRands<0], yerr=sig_CMASS_Auto_CMASSRands[xi_CMASS_Auto_CMASSRands<0], color='green', lw=0.5, ls='')
 leg = plt.errorbar(-r_CMASS_Auto_CMASSRands, xi_CMASS_Auto_CMASSRands, yerr=sig_CMASS_Auto_CMASSRands, color='blue')
 plt.xscale('log')
-plt.yscale('log', nonposy='clip')
+#plt.yscale('log', nonposy='clip')
 plt.xlabel(r'$\theta$ (degrees)')
 plt.legend([leg], [r'$w(\theta)$'], loc='lower left')
 #plt.xlim([0.01,10])

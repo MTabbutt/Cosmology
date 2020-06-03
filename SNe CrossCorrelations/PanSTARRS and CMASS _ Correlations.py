@@ -267,394 +267,251 @@ NOTES.write("Plotted: PanSTARRS Auto-Corr with PanSTARRS randoms")
 NOTES.write("\n \n")
 NOTES.close()
 
-"""
-# ## 4. Make CMASS Count-Count Auto Correlation Functions:
-# 
-# Typical Usage Pattern:
-# 
-# > nn = treecorr.NNCorrelation(config) 
-# <br>
-# nn.process(cat)     # For auto-correlation.
-# <br>
-# nn.process(cat1,cat2)   # For cross-correlation.
-# <br>
-# rr.process...           # Likewise for random-random correlations
-# <br>
-# dr.process...        # If desired, also do data-random correlations
-# <br>
-# rd.process...    # For cross-correlations, also do the reverse.
-# <br>
-# nn.write(file_name,rr,dr,rd)  # Write out to a file.
-# <br>
-# xi,varxi = nn.calculateXi(rr,dr,rd)  # Or get the correlation function directly.
-
-# In[20]:
 
 
-catCMASS = treecorr.Catalog(ra=CMASSLOWZTOT_DF['RA'], dec=CMASSLOWZTOT_DF['DEC'], 
-                                ra_units='degrees', dec_units='degrees')
-catCMASS
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#         4. Make CMASS Count-Count Auto Correlation Functions:
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("4. Make CMASS Count-Count Auto Correlation Functions:")
+NOTES.write("\n \n")
+NOTES.close()
 
 
-# In[21]:
+cat_eBOSS = treecorr.Catalog(ra=CMASSLOWZTOT_DF['RA'], dec=CMASSLOWZTOT_DF['DEC'], ra_units='degrees', dec_units='degrees')
+print("cat_eBOSS:")
+print(cat_eBOSS)
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("Created cat_eBOSS.")
+NOTES.write("\n \n")
+NOTES.close()
 
 
-# Data Auto-correlation: (dd)
-ddCMASS = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
-ddCMASS.process(catCMASS)
+nn_eBOSS_Auto_self = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+nn_eBOSS_Auto_self.process(cat_eBOSS)
 
+cat_rand_eBOSS = treecorr.Catalog(ra=CMASSLOWZTOT_DF_rands['RA'], dec=CMASSLOWZTOT_DF_rands['DEC'], ra_units='degrees', dec_units='degrees')
+rr_eBOSS = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+rr_eBOSS.process(cat_rand_eBOSS)
 
-# In[22]:
+dr_eBOSS = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+dr_eBOSS.process(cat_eBOSS, cat_rand_eBOSS)
 
-
-randCMASS = treecorr.Catalog(ra=CMASSLOWZTOT_DF_rands['RA'], dec=CMASSLOWZTOT_DF_rands['DEC'], ra_units='degrees', dec_units='degrees')
-rrCMASS = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
-rrCMASS.process(randCMASS)
-
-
-# In[23]:
-
-
-drCMASS = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
-drCMASS.process(catCMASS, randCMASS)
-
-
-# In[24]:
-
-
-rCMASS = numpy.exp(ddCMASS.meanlogr)
-xiCMASS, varxiCMASS = ddCMASS.calculateXi(rrCMASS, drCMASS)
-sigCMASS = numpy.sqrt(varxiCMASS)
-
-
-# In[25]:
+r_eBOSS = numpy.exp(nn_eBOSS_Auto_self.meanlogr)
+xi_eBOSS, varxi_eBOSS = nn_eBOSS_Auto_self.calculateXi(rr_eBOSS, dr_eBOSS)
+sig_eBOSS = numpy.sqrt(varxi_eBOSS)
 
 
 # Check that the randoms cover the same space as the data
 f3, (ax1c, ax2c) = plt.subplots(1, 2, figsize=(20, 5))
-
-ax1c.scatter(catCMASS.ra * 180/numpy.pi, catCMASS.dec * 180/numpy.pi, color='red', s=0.1)
+ax1c.scatter(cat_eBOSS.ra * 180/numpy.pi, cat_eBOSS.dec * 180/numpy.pi, color='red', s=0.1)
 ax1c.set_xlabel('RA (degrees)')
 ax1c.set_ylabel('Dec (degrees)')
 ax1c.set_title('CMASS/LOWZ Data')
-
 # Repeat in the opposite order
 ax2c.scatter(CMASSLOWZTOT_DF_rands['RA'], CMASSLOWZTOT_DF_rands['DEC'], color='blue', s=0.1)
 ax2c.set_xlabel('RA (degrees)')
 ax2c.set_ylabel('Dec (degrees)')
 ax2c.set_title('CMASS/LOWZ Randoms')
-
+plt.savefig(TESTING_PRODUCTS_PATH + "/CMASS_LOWZ Randoms")
 plt.show()
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("Plotted: CMASS_LOWZ Randoms")
+NOTES.write("\n \n")
+NOTES.close()
 
 
-# In[26]:
-
-
-# Plot the autocorrelation function: 
-
-plt.plot(rCMASS, xiCMASS, color='blue')
-plt.plot(rCMASS, -xiCMASS, color='blue', ls=':')
-plt.errorbar(rCMASS[xiCMASS>0], xiCMASS[xiCMASS>0], yerr=sigCMASS[xiCMASS>0], color='green', lw=0.5, ls='')
-plt.errorbar(rCMASS[xiCMASS<0], -xiCMASS[xiCMASS<0], yerr=sigCMASS[xiCMASS<0], color='green', lw=0.5, ls='')
-leg = plt.errorbar(-rCMASS, xiCMASS, yerr=sigCMASS, color='blue')
-
+# Plot the autocorrelation function:
+plt.plot(r_eBOSS, xi_eBOSS, color='blue')
+plt.plot(r_eBOSS, -xi_eBOSS, color='blue', ls=':')
+plt.errorbar(r_eBOSS[xi_eBOSS>0], xi_eBOSS[xi_eBOSS>0], yerr=sig_eBOSS[xi_eBOSS>0], color='green', lw=0.5, ls='')
+plt.errorbar(r_eBOSS[xi_eBOSS<0], -xi_eBOSS[xi_eBOSS<0], yerr=sig_eBOSS[xi_eBOSS<0], color='green', lw=0.5, ls='')
+leg = plt.errorbar(-r_eBOSS, xi_eBOSS, yerr=sig_eBOSS, color='blue')
 plt.xscale('log')
 plt.yscale('log', nonposy='clip')
 plt.xlabel(r'$\theta$ (degrees)')
-
 plt.legend([leg], [r'$w(\theta)$'], loc='lower left')
 plt.xlim([0.01,10])
+plt.title("eBOSS Auto Corr with eBOSS randoms")
+plt.savefig(TESTING_PRODUCTS_PATH + "/eBOSS Auto Corr with eBOSS randoms")
 plt.show()
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("Plotted: eBOSS Auto Corr with eBOSS randoms")
+NOTES.write("\n \n")
+NOTES.close()
 
 
-# ## 5. Analyze if the plots are correct: 
-# 
-# The CMASS plot should look like this paper's figure 1: </br>
-# 
-# https://arxiv.org/pdf/1607.03144.pdf
-# 
-# 
 
-# In[27]:
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#         5. Analyze if the plots are correct:
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-
-rCMASS = numpy.exp(ddCMASS.meanlogr)
-xiCMASS, varxiCMASS = ddCMASS.calculateXi(rrCMASS, drCMASS)
-sigCMASS = numpy.sqrt(varxiCMASS)
-
-plt.plot(rCMASS, xiCMASS, color='blue')
-plt.plot(rCMASS, -xiCMASS, color='blue', ls=':')
-#plt.errorbar(rCMASS[xiCMASS>0], xiCMASS[xiCMASS>0], yerr=sigCMASS[xiCMASS>0], color='green', lw=0.5, ls='')
-#plt.errorbar(rCMASS[xiCMASS<0], -xiCMASS[xiCMASS<0], yerr=sigCMASS[xiCMASS<0], color='green', lw=0.5, ls='')
-#leg = plt.errorbar(-rCMASS, xiCMASS, yerr=sigCMASS, color='blue')
-
-#plt.xscale('log')
-#plt.yscale('log', nonposy='clip')
-plt.xlabel(r'$\theta$ (degrees)')
-
-#plt.legend([leg], [r'$w(\theta)$'], loc='lower left')
-plt.xlim([0.0, 7.5])
-plt.ylim([0.0, .4])
-plt.show()
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("5. Analyze if the plots are correct:")
+NOTES.write("\n \n")
+NOTES.close()
 
 
-# My plot vs Theirs:
 
-# In[28]:
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#         5.1 Auto Correlate the CMASS and LOWZ randoms:
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-
-Image("/Users/megantabbutt/Desktop/ObservationalCosmology/SNeProject/Data_pictures_informal/5_14_20/plot1.jpeg")
-
-
-# ### Cross Corr the CMASS and LOWZ randoms:
-# 
-# - Do autoCorr function and choose CMASS to be the data, and LOWZ to be the rands
-
-# In[31]:
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("5.1 Auto Correlate the CMASS and LOWZ randoms:")
+NOTES.write("\n \n")
+NOTES.close()
 
 
-connCMASSRands = sqlite3.connect(dataPath + 'CMASS_rands.db')
-randSampleQry = "SELECT * FROM CMASS_South_rands WHERE `index` IN (SELECT `index` FROM CMASS_South_rands ORDER BY RANDOM() LIMIT 500000) UNION SELECT * FROM CMASS_North_rands WHERE `index` IN (SELECT `index` FROM CMASS_North_rands ORDER BY RANDOM() LIMIT 500000)"
-randQry = "SELECT * FROM CMASS_South_rands UNION SELECT * FROM CMASS_North_rands"
-
+connCMASSRands = sqlite3.connect(DATA_PATH + 'CMASS_rands.db')
+randSampleQry = "SELECT * FROM CMASS_South_rands WHERE `index` IN (SELECT `index` FROM CMASS_South_rands ORDER BY RANDOM() LIMIT 5000) UNION SELECT * FROM CMASS_North_rands WHERE `index` IN (SELECT `index` FROM CMASS_North_rands ORDER BY RANDOM() LIMIT 5000)"
 CMASS_DF_rands = pd.read_sql(randSampleQry, con=connCMASSRands)
-CMASS_DF_rands.to_json(dataPath + "CMASS_DF_rands")
-CMASS_DF_rands.head(3)
+CMASS_DF_rands.to_json(DATA_PATH + "CMASS_DF_rands")
+print("CMASS_DF_rands: ")
+print(CMASS_DF_rands.head(3)) # 1.3 million objects
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("CMASS_DF_rands Database objects: " + str(len(CMASS_DF_rands)))
+NOTES.write("\n \n")
+NOTES.close()
+connCMASSRands.close()
 
-
-# In[32]:
-
-
-connLOWZRands = sqlite3.connect(dataPath + 'LOWZ_rands.db')
-randSampleQry = "SELECT * FROM LOWZ_South_rands WHERE `index` IN (SELECT `index` FROM LOWZ_South_rands ORDER BY RANDOM() LIMIT 500000) UNION SELECT * FROM LOWZ_North_rands WHERE `index` IN (SELECT `index` FROM LOWZ_North_rands ORDER BY RANDOM() LIMIT 500000)"
-randQry = "SELECT * FROM LOWZ_South_rands UNION SELECT * FROM LOWZ_North_rands"
-
+connLOWZRands = sqlite3.connect(DATA_PATH + 'LOWZ_rands.db')
+randSampleQry = "SELECT * FROM LOWZ_South_rands WHERE `index` IN (SELECT `index` FROM LOWZ_South_rands ORDER BY RANDOM() LIMIT 5000) UNION SELECT * FROM LOWZ_North_rands WHERE `index` IN (SELECT `index` FROM LOWZ_North_rands ORDER BY RANDOM() LIMIT 5000)"
 LOWZ_DF_rands = pd.read_sql(randSampleQry, con=connLOWZRands)
-LOWZ_DF_rands.to_json(dataPath + "LOWZ_DF_rands")
-LOWZ_DF_rands.head(3)
+LOWZ_DF_rands.to_json(DATA_PATH + "LOWZ_DF_rands")
+print("LOWZ_DF_rands: ")
+print(LOWZ_DF_rands.head(3)) # 1.3 million objects
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("LOWZ_DF_rands Database objects: " + str(len(LOWZ_DF_rands)))
+NOTES.write("\n \n")
+NOTES.close()
+connLOWZRands.close()
 
 
-# In[33]:
+cat_CMASS_rands = treecorr.Catalog(ra=CMASS_DF_rands['RA'], dec=CMASS_DF_rands['DEC'], ra_units='degrees', dec_units='degrees')
+cat_CMASS_rands
 
+nn_CMASS_Auto_LOWZRands = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+nn_CMASS_Auto_LOWZRands.process(cat_CMASS_rands)
 
-catCMASSrands = treecorr.Catalog(ra=CMASS_DF_rands['RA'], dec=CMASS_DF_rands['DEC'], ra_units='degrees', dec_units='degrees')
-catCMASSrands
+cat_rand_LOWZ = treecorr.Catalog(ra=LOWZ_DF_rands['RA'], dec=LOWZ_DF_rands['DEC'], ra_units='degrees', dec_units='degrees')
+rr_LOWZ_rands = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+rr_LOWZ_rands.process(cat_rand_LOWZ)
 
+dr_CMASS_LOWZrands = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+dr_CMASS_LOWZrands.process(cat_CMASS_rands, cat_rand_LOWZ)
 
-# In[34]:
-
-
-ddCMASSrands = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
-ddCMASSrands.process(catCMASSrands)
-ddCMASSrands
-
-
-# In[35]:
-
-
-randCMASSrands = treecorr.Catalog(ra=LOWZ_DF_rands['RA'], dec=LOWZ_DF_rands['DEC'], ra_units='degrees', dec_units='degrees')
-rrCMASSrands = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
-rrCMASSrands.process(randCMASSrands)
-rrCMASSrands
-
-
-# In[36]:
-
-
-drCMASSrands = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
-drCMASSrands.process(catCMASSrands, randCMASSrands)
-drCMASSrands
-
-
-# In[37]:
-
-
-rCMASSrands = numpy.exp(ddCMASSrands.meanlogr)
-xiCMASSrands, varxiCMASSrands = ddCMASSrands.calculateXi(rrCMASSrands, drCMASSrands)
-sigCMASSrands = numpy.sqrt(varxiCMASSrands)
-xiCMASSrands
-#varxiCMASSrands
-
-
-# In[38]:
+r_CMASS_LOWZrands = numpy.exp(nn_CMASS_Auto_LOWZRands.meanlogr)
+xi_CMASS_LOWZrands, varxi_CMASS_LOWZrands = nn_CMASS_Auto_LOWZRands.calculateXi(rr_LOWZ_rands, dr_CMASS_LOWZrands)
+sig_CMASS_LOWZrands = numpy.sqrt(varxi_CMASS_LOWZrands)
 
 
 # Check that the randoms cover the same space as the data
 f4, (ax1d, ax2d) = plt.subplots(1, 2, figsize=(20, 5))
-
-ax1d.scatter(catCMASSrands.ra * 180/numpy.pi, catCMASSrands.dec * 180/numpy.pi, color='blue', s=0.1)
+ax1d.scatter(cat_CMASS_rands.ra * 180/numpy.pi, cat_CMASS_rands.dec * 180/numpy.pi, color='blue', s=0.1)
 ax1d.set_xlabel('RA (degrees)')
 ax1d.set_ylabel('Dec (degrees)')
 ax1d.set_title('CMASS Randoms')
-
 # Repeat in the opposite order
-ax2d.scatter(randCMASSrands.ra * 180/numpy.pi, randCMASSrands.dec * 180/numpy.pi, color='green', s=0.1)
+ax2d.scatter(cat_CMASS_rands.ra * 180/numpy.pi, cat_CMASS_rands.dec * 180/numpy.pi, color='green', s=0.1)
 ax2d.set_xlabel('RA (degrees)')
 ax2d.set_ylabel('Dec (degrees)')
 ax2d.set_title('LOWZ Randoms')
-
-#plt.savefig(testingProductsPath + 'CMASS_LOWZ_randoms_skyplot')
+plt.title("CMASS and LOWZ randoms")
+plt.savefig(TESTING_PRODUCTS_PATH + "/CMASS and LOWZ randoms")
 plt.show()
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("Plotted: CMASS and LOWZ randoms")
+NOTES.write("\n \n")
+NOTES.close()
 
 
-# In[39]:
-
-
-# Plot the autocorrelation function: 
-
-plt.plot(rCMASSrands, xiCMASSrands, color='blue')
-plt.plot(rCMASSrands, -xiCMASSrands, color='blue', ls=':')
-plt.errorbar(rCMASSrands[xiCMASSrands>0], xiCMASSrands[xiCMASSrands>0], yerr=sigCMASSrands[xiCMASSrands>0], color='green', lw=0.5, ls='')
-plt.errorbar(rCMASSrands[xiCMASSrands<0], -xiCMASSrands[xiCMASSrands<0], yerr=sigCMASSrands[xiCMASSrands<0], color='green', lw=0.5, ls='')
-leg = plt.errorbar(-rCMASSrands, xiCMASSrands, yerr=sigCMASSrands, color='blue')
-
+# Plot the autocorrelation function:
+plt.plot(r_CMASS_LOWZrands, xi_CMASS_LOWZrands, color='blue')
+plt.plot(r_CMASS_LOWZrands, -xi_CMASS_LOWZrands, color='blue', ls=':')
+plt.errorbar(r_CMASS_LOWZrands[xi_CMASS_LOWZrands>0], xi_CMASS_LOWZrands[xi_CMASS_LOWZrands>0], yerr=sig_CMASS_LOWZrands[xi_CMASS_LOWZrands>0], color='green', lw=0.5, ls='')
+plt.errorbar(r_CMASS_LOWZrands[xi_CMASS_LOWZrands<0], -xi_CMASS_LOWZrands[xi_CMASS_LOWZrands<0], yerr=sig_CMASS_LOWZrands[xi_CMASS_LOWZrands<0], color='green', lw=0.5, ls='')
+leg = plt.errorbar(-r_CMASS_LOWZrands, xi_CMASS_LOWZrands, yerr=sig_CMASS_LOWZrands, color='blue')
 plt.xscale('log')
-#plt.yscale('log', nonposy='clip')
+plt.yscale('log', nonposy='clip')
 plt.xlabel(r'$\theta$ (degrees)')
-
 plt.legend([leg], [r'$w(\theta)$'], loc='lower left')
 #plt.xlim([0.01,10])
 #plt.ylim([0.0, .00001])
-plt.title("Count-Count Auto Corr Function for CMASS rands as data and LOWZ rands as rands")
-
-#plt.savefig(testingProductsPath + 'NN_Auto_CMASS_Rands')
+plt.title("CMASS_rands Auto Corr with LOWZ_rands as randoms")
+plt.savefig(TESTING_PRODUCTS_PATH + "/CMASS_rands Auto Corr with LOWZ_rands as randoms")
 plt.show()
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("Plotted: CMASS_rands Auto Corr with LOWZ_rands as randoms")
+NOTES.write("\n \n")
+NOTES.close()
 
 
-# In[40]:
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#         5.2 Auto Correlate the CMASS and LOWZ randoms - Reversed:
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("5.2 Auto Correlate the CMASS and LOWZ randoms - Reversed:")
+NOTES.write("\n \n")
+NOTES.close()
+
+cat_LOWZ_rands = treecorr.Catalog(ra=LOWZ_DF_rands['RA'], dec=LOWZ_DF_rands['DEC'], ra_units='degrees', dec_units='degrees')
+cat_LOWZ_rands
+
+nn_LOWZ_Auto_CMASSRands = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+nn_LOWZ_Auto_CMASSRands.process(cat_LOWZ_rands)
+
+cat_rand_CMASS = treecorr.Catalog(ra=CMASS_DF_rands['RA'], dec=CMASS_DF_rands['DEC'], ra_units='degrees', dec_units='degrees')
+rr_CMASS_rands = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+rr_CMASS_rands.process(cat_rand_CMASS)
+
+dr_LOWZ_CMASSrands = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+dr_LOWZ_CMASSrands.process(cat_rand_LOWZ, cat_CMASS_rands)
+
+r_LOWZ_CMASSrands = numpy.exp(nn_LOWZ_Auto_CMASSRands.meanlogr)
+xi_LOWZ_CMASSrands, varxi_LOWZ_CMASSrands = nn_LOWZ_Auto_CMASSRands.calculateXi(rr_CMASS_rands, dr_LOWZ_CMASSrands)
+sig_LOWZ_CMASSrands = numpy.sqrt(varxi_LOWZ_CMASSrands)
 
 
-# Plot the autocorrelation function: 
-
-plt.plot(rCMASSrands, xiCMASSrands, color='blue')
-plt.plot(rCMASSrands, -xiCMASSrands, color='blue', ls=':')
-plt.errorbar(rCMASSrands[xiCMASSrands>0], xiCMASSrands[xiCMASSrands>0], yerr=sigCMASSrands[xiCMASSrands>0], color='green', lw=0.5, ls='')
-plt.errorbar(rCMASSrands[xiCMASSrands<0], -xiCMASSrands[xiCMASSrands<0], yerr=sigCMASSrands[xiCMASSrands<0], color='green', lw=0.5, ls='')
-leg = plt.errorbar(-rCMASSrands, xiCMASSrands, yerr=sigCMASSrands, color='blue')
-
+# Plot the autocorrelation function:
+plt.plot(r_LOWZ_CMASSrands, xi_LOWZ_CMASSrands, color='blue')
+plt.plot(r_LOWZ_CMASSrands, -xi_LOWZ_CMASSrands, color='blue', ls=':')
+plt.errorbar(r_LOWZ_CMASSrands[xi_LOWZ_CMASSrands>0], xi_LOWZ_CMASSrands[xi_LOWZ_CMASSrands>0], yerr=sig_LOWZ_CMASSrands[xi_LOWZ_CMASSrands>0], color='green', lw=0.5, ls='')
+plt.errorbar(r_LOWZ_CMASSrands[xi_LOWZ_CMASSrands<0], -xi_LOWZ_CMASSrands[xi_LOWZ_CMASSrands<0], yerr=sig_LOWZ_CMASSrands[xi_LOWZ_CMASSrands<0], color='green', lw=0.5, ls='')
+leg = plt.errorbar(-r_LOWZ_CMASSrands, xi_LOWZ_CMASSrands, yerr=sig_LOWZ_CMASSrands, color='blue')
 plt.xscale('log')
-#plt.yscale('log', nonposy='clip')
+plt.yscale('log', nonposy='clip')
 plt.xlabel(r'$\theta$ (degrees)')
-
-plt.legend([leg], [r'$w(\theta)$'], loc='lower left')
-#plt.xlim([0.01,10])
-plt.ylim([-.4, .4])
-plt.title("Count-Count Auto Corr Function for CMASS rands as data and LOWZ rands as rands")
-plt.savefig(testingProductsPath + 'NN_Auto_CMASS_Rands_zoom')
-plt.show()
-
-
-# ### AutoCorr the CMASS and LOWZ randoms:
-# 
-# - Do autoCorr function and choose LOWZ to be the data, and CMASS to be the rands
-
-# In[41]:
-
-
-catLOWZrands = treecorr.Catalog(ra=LOWZ_DF_rands['RA'], dec=LOWZ_DF_rands['DEC'], ra_units='degrees', dec_units='degrees')
-catLOWZrands
-
-
-# In[42]:
-
-
-ddLOWZrands = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
-ddLOWZrands.process(catLOWZrands)
-ddLOWZrands
-
-
-# In[43]:
-
-
-randLOWZrands = treecorr.Catalog(ra=CMASS_DF_rands['RA'], dec=CMASS_DF_rands['DEC'], ra_units='degrees', dec_units='degrees')
-rrLOWZrands = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
-rrLOWZrands.process(randLOWZrands)
-rrLOWZrands
-
-
-# In[44]:
-
-
-drLOWZrands = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
-drLOWZrands.process(catLOWZrands, randLOWZrands)
-drLOWZrands
-
-
-# In[45]:
-
-
-rLOWZrands = numpy.exp(ddLOWZrands.meanlogr)
-xiLOWZrands, varxiLOWZrands = ddLOWZrands.calculateXi(rrLOWZrands, drLOWZrands)
-sigLOWZrands = numpy.sqrt(varxiLOWZrands)
-xiLOWZrands
-#varxiCMASSrands
-
-
-# In[46]:
-
-
-# Plot the autocorrelation function: 
-
-plt.plot(rLOWZrands, xiLOWZrands, color='blue')
-plt.plot(rLOWZrands, -xiLOWZrands, color='blue', ls=':')
-plt.errorbar(rLOWZrands[xiLOWZrands>0], xiLOWZrands[xiLOWZrands>0], yerr=sigLOWZrands[xiLOWZrands>0], color='green', lw=0.5, ls='')
-plt.errorbar(rLOWZrands[xiLOWZrands<0], -xiLOWZrands[xiLOWZrands<0], yerr=sigLOWZrands[xiLOWZrands<0], color='green', lw=0.5, ls='')
-leg = plt.errorbar(-rLOWZrands, xiLOWZrands, yerr=sigLOWZrands, color='blue')
-
-plt.xscale('log')
-#plt.yscale('log', nonposy='clip')
-plt.xlabel(r'$\theta$ (degrees)')
-
 plt.legend([leg], [r'$w(\theta)$'], loc='lower left')
 #plt.xlim([0.01,10])
 #plt.ylim([0.0, .00001])
-plt.title("Count-Count Auto Corr Function for LOWZ rands as data and CMASS rands as rands")
-#plt.savefig(testingProductsPath + 'NN_Auto_LOWZ_Rands')
+plt.title("LOWZ_rands Auto Corr with CMASS_rands as randoms")
+plt.savefig(TESTING_PRODUCTS_PATH + "/LOWZ_rands Auto Corr with CMASS_rands as randoms")
 plt.show()
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("Plotted: LOWZ_rands Auto Corr with CMASS_rands as randoms")
+NOTES.write("\n \n")
+NOTES.close()
 
 
-# In[47]:
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#         6. Cross Correlate the eBOSS and PanSTARRS sets
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-# Plot the autocorrelation function: 
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("6. Cross Correlate the eBOSS and PanSTARRS sets")
+NOTES.write("\n \n")
+NOTES.close()
 
-plt.plot(rLOWZrands, xiLOWZrands, color='blue')
-plt.plot(rLOWZrands, -xiLOWZrands, color='blue', ls=':')
-plt.errorbar(rLOWZrands[xiLOWZrands>0], xiLOWZrands[xiLOWZrands>0], yerr=sigLOWZrands[xiLOWZrands>0], color='green', lw=0.5, ls='')
-plt.errorbar(rLOWZrands[xiLOWZrands<0], -xiLOWZrands[xiLOWZrands<0], yerr=sigLOWZrands[xiLOWZrands<0], color='green', lw=0.5, ls='')
-leg = plt.errorbar(-rLOWZrands, xiLOWZrands, yerr=sigLOWZrands, color='blue')
-
-plt.xscale('log')
-#plt.yscale('log', nonposy='clip')
-plt.xlabel(r'$\theta$ (degrees)')
-
-plt.legend([leg], [r'$w(\theta)$'], loc='lower left')
-#plt.xlim([0.01,10])
-plt.ylim([-0.4, .4])
-plt.title("Count-Count Auto Corr Function for LOWZ rands as data and CMASS rands as rands")
-#plt.savefig(testingProductsPath + 'NN_Auto_LOWZ_Rands_zoom')
-plt.show()
-
-
-# ### AutoCorr the CMASS and LOWZ data sets seperatly with their individual randoms to check for asymptote
-# 
-
-# In[48]:
-
-
-# come back and do this later
-
-
-# ## 6. Cross Correlate the eBOSS and PanSTARRS sets
-# 
-
-# In[49]:
-
-
-# Need to get just 9 pointings from PanSTARRS: 
-
+print("Populating pointings with randoms: ")
+# Need to get just 9 pointings from PanSTARRS:
 maskRA_overlap = []
 maskDEC_overlap = []
+randoms_Lengths_overlap = []
 
 for pointing in pointings:
     if(pointing == "MD02"):
@@ -675,200 +532,76 @@ for pointing in pointings:
                 maskRA_overlap.append(X)
                 maskDEC_overlap.append(Y)
         print(len(maskRA_overlap) - maskRAprevious)
+        randoms_Lengths_overlap.append(len(maskRA_overlap) - maskRAprevious)
+
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("Populated pointings with randoms. Randoms per pointing: (1, 3-10, 2):")
+NOTES.write(str(randoms_Lengths_overlap))
+NOTES.write("\n \n")
+NOTES.close()
 
 
-# In[50]:
-
-
-f2, (ax1b, ax2b) = plt.subplots(1, 2, figsize=(20,5))
-
-ax1b.scatter(catPanSTARRS.ra * 180/numpy.pi, catPanSTARRS.dec * 180/numpy.pi, color='blue', s=0.1, marker='x')
-ax1b.scatter(catCMASS.ra * 180/numpy.pi, catCMASS.dec * 180/numpy.pi, color='green', s=0.1, marker='x')
-ax1b.set_xlabel('RA (degrees)')
-ax1b.set_ylabel('Dec (degrees)')
-#ax1b.set_title('')
-
-# Repeat in the opposite order
-ax2b.scatter(catCMASS.ra * 180/numpy.pi, catCMASS.dec * 180/numpy.pi, color='blue', s=0.1, marker='x')
-ax2b.scatter(catPanSTARRS.ra * 180/numpy.pi, catPanSTARRS.dec * 180/numpy.pi, color='green', s=0.1, marker='x')
-ax2b.set_xlabel('RA (degrees)')
-ax2b.set_ylabel('Dec (degrees)')
-#ax2b.set_title('')
-
-plt.show()
-
-
-# In[51]:
-
-
-connPAN = sqlite3.connect(dataPath + 'PanSTARRS.db')
-
+connPANoverlap = sqlite3.connect(DATA_PATH + 'PanSTARRS.db')
 qry = "SELECT ID, DEC, RA, zSN, zHost FROM PanSTARRSNEW WHERE (DEC > -20) AND ((zSN > -999) OR (zHost > -999))"
-
-PanSTARRSNEW_GoodZ_ovelap = pd.read_sql(qry, con=connPAN)
-PanSTARRSNEW_GoodZ_ovelap.head(3) # 1058 objects
-
-
-# In[52]:
-
-
-connBOSS.close()
-connBOSSRands.close()
-
-
-# In[ ]:
+PanSTARRSNEW_GoodZ_ovelap = pd.read_sql(qry, con=connPANoverlap)
+print("PanSTARRSNEW_GoodZ_ovelap: ") # 1129 objects over 10 pointings
+print(PanSTARRSNEW_GoodZ_ovelap.head(3)) # 1129 objects over 10 pointings
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("PanSTARRSNEW_GoodZ_ovelap Database (with 9 pointings) objects: " + str(len(PanSTARRSNEW_GoodZ_ovelap)))
+NOTES.write("\n \n")
+NOTES.close()
+connPANoverlap.close()
 
 
 
+cat_PanSTARRS_overlap = treecorr.Catalog(ra=PanSTARRSNEW_GoodZ_ovelap['RA'], dec=PanSTARRSNEW_GoodZ_ovelap['DEC'], ra_units='degrees', dec_units='degrees')
+
+nn_Pan_xCorr_eBOSS = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+nn_Pan_xCorr_eBOSS.process(cat_PanSTARRS_overlap, cat_eBOSS)
+
+cat_rand_Pan_Overlap = treecorr.Catalog(ra=maskRA_overlap, dec=maskDEC_overlap, ra_units='degrees', dec_units='degrees')
+
+rr_Pan_xCorr_eBOSS = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+rr_Pan_xCorr_eBOSS.process(cat_rand_Pan_Overlap, cat_rand_eBOSS)
+
+dr_Pan_xCorr_eBOSS = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+dr_Pan_xCorr_eBOSS.process(cat_PanSTARRS_overlap, cat_rand_eBOSS)
+
+rd_Pan_xCorr_eBOSS = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
+rd_Pan_xCorr_eBOSS.process(cat_rand_eBOSS, cat_PanSTARRS_overlap)
+
+r_Pan_xCorr_eBOSS = numpy.exp(nn_Pan_xCorr_eBOSS.meanlogr)
+xi_Pan_xCorr_eBOSS, varxi_Pan_xCorr_eBOSS = nn_Pan_xCorr_eBOSS.calculateXi(rr_Pan_xCorr_eBOSS, dr_Pan_xCorr_eBOSS, rd_Pan_xCorr_eBOSS)
+sig_Pan_xCorr_eBOSS = numpy.sqrt(varxi_Pan_xCorr_eBOSS)
 
 
-# In[53]:
-
-
-catPanSTARRS_overlap = treecorr.Catalog(ra=PanSTARRSNEW_GoodZ_ovelap['RA'], dec=PanSTARRSNEW_GoodZ_ovelap['DEC'], ra_units='degrees', dec_units='degrees')
-catPanSTARRS
-
-
-# In[54]:
-
-
-catCMASS = treecorr.Catalog(ra=CMASSLOWZTOT_DF['RA'], dec=CMASSLOWZTOT_DF['DEC'], 
-                                ra_units='degrees', dec_units='degrees')
-catCMASS
-
-
-# In[55]:
-
-
-nnXCorr = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
-nnXCorr.process(catPanSTARRS_overlap, catCMASS)
-nnXCorr
-
-
-# In[56]:
-
-
-RandsPAN = treecorr.Catalog(ra=maskRA_overlap, dec=maskDEC_overlap, ra_units='degrees', dec_units='degrees')
-randCMASS = treecorr.Catalog(ra=CMASSLOWZTOT_DF_rands['RA'], dec=CMASSLOWZTOT_DF_rands['DEC'], ra_units='degrees', dec_units='degrees')
-
-
-# In[57]:
-
-
-rrXCorr = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
-rrXCorr.process(RandsPAN, randCMASS)
-
-
-# In[58]:
-
-
-drXCorr = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
-drXCorr.process(catPanSTARRS_overlap, randCMASS)
-
-
-# In[59]:
-
-
-rdXCorr = treecorr.NNCorrelation(min_sep=0.01, max_sep=10, bin_size=0.2, sep_units='degrees')
-rdXCorr.process(catCMASS, RandsPAN)
-
-
-# In[60]:
-
-
-rXCorr = numpy.exp(nnXCorr.meanlogr)
-xiXCorr, varxiXCorr = nnXCorr.calculateXi(rrXCorr, drXCorr, rdXCorr)
-sigXCorr = numpy.sqrt(varxiXCorr)
-
-
-# In[61]:
-
-
-# Plot the Cross Correlation function: 
-
-plt.plot(rXCorr, xiXCorr, color='blue')
-plt.plot(rXCorr, -xiXCorr, color='blue', ls=':')
-plt.errorbar(rXCorr[xiXCorr>0], xiXCorr[xiXCorr>0], yerr=sigXCorr[xiXCorr>0], color='green', lw=0.5, ls='')
-plt.errorbar(rXCorr[xiXCorr<0], -xiXCorr[xiXCorr<0], yerr=sigXCorr[xiXCorr<0], color='green', lw=0.5, ls='')
-leg = plt.errorbar(-rXCorr, xiXCorr, yerr=sigXCorr, color='blue')
-
+# Plot the Cross Correlation function:
+plt.plot(r_Pan_xCorr_eBOSS, xi_Pan_xCorr_eBOSS, color='blue')
+plt.plot(r_Pan_xCorr_eBOSS, -xi_Pan_xCorr_eBOSS, color='blue', ls=':')
+plt.errorbar(r_Pan_xCorr_eBOSS[xi_Pan_xCorr_eBOSS>0], xi_Pan_xCorr_eBOSS[xi_Pan_xCorr_eBOSS>0], yerr=sig_Pan_xCorr_eBOSS[xi_Pan_xCorr_eBOSS>0], color='green', lw=0.5, ls='')
+plt.errorbar(r_Pan_xCorr_eBOSS[xi_Pan_xCorr_eBOSS<0], -xi_Pan_xCorr_eBOSS[xi_Pan_xCorr_eBOSS<0], yerr=sig_Pan_xCorr_eBOSS[xi_Pan_xCorr_eBOSS<0], color='green', lw=0.5, ls='')
+leg = plt.errorbar(-r_Pan_xCorr_eBOSS, xi_Pan_xCorr_eBOSS, yerr=sig_Pan_xCorr_eBOSS, color='blue')
 plt.xscale('log')
 plt.yscale('log', nonposy='clip')
 plt.xlabel(r'$\theta$ (degrees)')
-
 plt.legend([leg], [r'$w(\theta)$'], loc='lower left')
 #plt.xlim([0.01,10])
 #plt.ylim([0.0, .00001])
-plt.title("Cross Correlation")
-plt.savefig(testingProductsPath + 'Cross-Corr PanSTARRS and eBOSS with error' + date)
+plt.title("PanSTARRS cross Correlation with eBOSS")
+plt.savefig(TESTING_PRODUCTS_PATH + "/PanSTARRS cross Correlation with eBOSS")
 plt.show()
-
-
-# In[62]:
-
-
-# Plot the Cross Correlation function: 
-
-plt.plot(rXCorr, xiXCorr, color='blue')
-plt.plot(rXCorr, -xiXCorr, color='blue', ls=':')
-#plt.errorbar(rXCorr[xiXCorr>0], xiXCorr[xiXCorr>0], yerr=sigXCorr[xiXCorr>0], color='green', lw=0.5, ls='')
-#plt.errorbar(rXCorr[xiXCorr<0], -xiXCorr[xiXCorr<0], yerr=sigXCorr[xiXCorr<0], color='green', lw=0.5, ls='')
-#leg = plt.errorbar(-rXCorr, xiXCorr, yerr=sigXCorr, color='blue')
-
-plt.xscale('log')
-plt.yscale('log', nonposy='clip')
-plt.xlabel(r'$\theta$ (degrees)')
-
-plt.legend([leg], [r'$w(\theta)$'], loc='lower left')
-#plt.xlim([0.01,10])
-#plt.ylim([0.0, .00001])
-plt.title("Cross Correlation")
-plt.savefig(testingProductsPath + 'Cross-Corr PanSTARRS and eBOSS' + date)
-plt.show()
-
-
-# In[63]:
-
-
-f2, (ax1b, ax2b) = plt.subplots(1, 2, figsize=(20,5))
-
-ax1b.scatter(catPanSTARRS_overlap.ra * 180/numpy.pi, catPanSTARRS_overlap.dec * 180/numpy.pi, color='blue', s=0.1, marker='x')
-ax1b.scatter(catCMASS.ra * 180/numpy.pi, catCMASS.dec * 180/numpy.pi, color='green', s=0.1, marker='x')
-ax1b.set_xlabel('RA (degrees)')
-ax1b.set_ylabel('Dec (degrees)')
-#ax1b.set_title('')
-
-# Repeat in the opposite order
-ax2b.scatter(catCMASS.ra * 180/numpy.pi, catCMASS.dec * 180/numpy.pi, color='blue', s=0.1, marker='x')
-ax2b.scatter(catPanSTARRS_overlap.ra * 180/numpy.pi, catPanSTARRS_overlap.dec * 180/numpy.pi, color='green', s=0.1, marker='x')
-ax2b.set_xlabel('RA (degrees)')
-ax2b.set_ylabel('Dec (degrees)')
-#ax2b.set_title('')
-
-plt.show()
-
-
-# In[64]:
-
-
-f2, (ax1b, ax2b) = plt.subplots(1, 2, figsize=(20,5))
-
-ax1b.scatter(RandsPAN.ra * 180/numpy.pi, RandsPAN.dec * 180/numpy.pi, color='blue', s=0.1, marker='x')
-ax1b.scatter(randCMASS.ra * 180/numpy.pi, randCMASS.dec * 180/numpy.pi, color='green', s=0.1, marker='x')
-ax1b.set_xlabel('RA (degrees)')
-ax1b.set_ylabel('Dec (degrees)')
-#ax1b.set_title('')
-
-# Repeat in the opposite order
-ax2b.scatter(randCMASS.ra * 180/numpy.pi, randCMASS.dec * 180/numpy.pi, color='blue', s=0.1, marker='x')
-ax2b.scatter(RandsPAN.ra * 180/numpy.pi, RandsPAN.dec * 180/numpy.pi, color='green', s=0.1, marker='x')
-ax2b.set_xlabel('RA (degrees)')
-ax2b.set_ylabel('Dec (degrees)')
-#ax2b.set_title('')
-
-plt.show()
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("Plotted: PanSTARRS cross Correlation with eBOSS")
+NOTES.write("\n \n")
+NOTES.close()
 
 
 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
-"""
+NOTES = open(NOTES_PATH, "a")
+NOTES.write("Program is done.")
+NOTES.write("\n \n")
+NOTES.close()

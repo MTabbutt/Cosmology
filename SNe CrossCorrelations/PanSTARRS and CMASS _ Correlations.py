@@ -89,7 +89,7 @@ connBOSS.close()
 
 # Randoms provided by CMASS:
 connBOSSRands = sqlite3.connect(DATA_PATH + 'CMASS_and_LOWZ_rands.db')
-randSampleQry = "SELECT * FROM CMASSLOWZTOT_South_rands WHERE `index` IN (SELECT `index` FROM CMASSLOWZTOT_South_rands ORDER BY RANDOM() LIMIT 50000) UNION SELECT * FROM CMASSLOWZTOT_North_rands WHERE `index` IN (SELECT `index` FROM CMASSLOWZTOT_North_rands ORDER BY RANDOM() LIMIT 50000)"
+randSampleQry = "SELECT * FROM CMASSLOWZTOT_South_rands WHERE `index` IN (SELECT `index` FROM CMASSLOWZTOT_South_rands ORDER BY RANDOM() LIMIT 5000000) UNION SELECT * FROM CMASSLOWZTOT_North_rands WHERE `index` IN (SELECT `index` FROM CMASSLOWZTOT_North_rands ORDER BY RANDOM() LIMIT 5000000)"
 #randQry = "SELECT * FROM CMASSLOWZTOT_South_rands UNION SELECT * FROM CMASSLOWZTOT_North_rands"
 CMASSLOWZTOT_DF_rands = pd.read_sql(randSampleQry, con=connBOSSRands)
 CMASSLOWZTOT_DF_rands.to_json(DATA_PATH + "CMASSLOWZTOT_DF_rands")
@@ -135,7 +135,7 @@ NOTES.close()
 
 
 # Change this for more and less, 10E5 good for personal laptop ~5min run time
-randsLength = 10**6
+randsLength = 10**8
 NOTES = open(NOTES_PATH, "a")
 NOTES.write("randsLength: " + str(randsLength))
 NOTES.write("\n \n")
@@ -370,7 +370,7 @@ NOTES.close()
 
 
 connCMASSRands = sqlite3.connect(DATA_PATH + 'CMASS_rands.db')
-randSampleQry = "SELECT * FROM CMASS_South_rands WHERE `index` IN (SELECT `index` FROM CMASS_South_rands ORDER BY RANDOM() LIMIT 50000) UNION SELECT * FROM CMASS_North_rands WHERE `index` IN (SELECT `index` FROM CMASS_North_rands ORDER BY RANDOM() LIMIT 50000)"
+randSampleQry = "SELECT * FROM CMASS_South_rands WHERE `index` IN (SELECT `index` FROM CMASS_South_rands ORDER BY RANDOM() LIMIT 5000000) UNION SELECT * FROM CMASS_North_rands WHERE `index` IN (SELECT `index` FROM CMASS_North_rands ORDER BY RANDOM() LIMIT 5000000)"
 CMASS_DF_rands = pd.read_sql(randSampleQry, con=connCMASSRands)
 CMASS_DF_rands.to_json(DATA_PATH + "CMASS_DF_rands")
 print("CMASS_DF_rands: ")
@@ -382,7 +382,7 @@ NOTES.close()
 connCMASSRands.close()
 
 connLOWZRands = sqlite3.connect(DATA_PATH + 'LOWZ_rands.db')
-randSampleQry = "SELECT * FROM LOWZ_South_rands WHERE `index` IN (SELECT `index` FROM LOWZ_South_rands ORDER BY RANDOM() LIMIT 50000) UNION SELECT * FROM LOWZ_North_rands WHERE `index` IN (SELECT `index` FROM LOWZ_North_rands ORDER BY RANDOM() LIMIT 50000)"
+randSampleQry = "SELECT * FROM LOWZ_South_rands WHERE `index` IN (SELECT `index` FROM LOWZ_South_rands ORDER BY RANDOM() LIMIT 5000000) UNION SELECT * FROM LOWZ_North_rands WHERE `index` IN (SELECT `index` FROM LOWZ_North_rands ORDER BY RANDOM() LIMIT 5000000)"
 LOWZ_DF_rands = pd.read_sql(randSampleQry, con=connLOWZRands)
 LOWZ_DF_rands.to_json(DATA_PATH + "LOWZ_DF_rands")
 print("LOWZ_DF_rands: ")
@@ -616,7 +616,7 @@ NOTES.close()
 
 
 connCMASSRands = sqlite3.connect(DATA_PATH + 'CMASS_rands.db')
-randSampleQry = "SELECT * FROM CMASS_South_rands WHERE `index` IN (SELECT `index` FROM CMASS_South_rands ORDER BY RANDOM() LIMIT 50000) UNION SELECT * FROM CMASS_North_rands WHERE `index` IN (SELECT `index` FROM CMASS_North_rands ORDER BY RANDOM() LIMIT 50000)"
+randSampleQry = "SELECT * FROM CMASS_South_rands WHERE `index` IN (SELECT `index` FROM CMASS_South_rands ORDER BY RANDOM() LIMIT 5000000) UNION SELECT * FROM CMASS_North_rands WHERE `index` IN (SELECT `index` FROM CMASS_North_rands ORDER BY RANDOM() LIMIT 5000000)"
 CMASS_DF_rands_Sample1 = pd.read_sql(randSampleQry, con=connCMASSRands)
 CMASS_DF_rands_Sample1.to_json(DATA_PATH + "CMASS_DF_rands")
 print("CMASS_DF_rands_Sample1: ")
@@ -628,7 +628,7 @@ NOTES.close()
 connCMASSRands.close()
 
 connCMASSRands = sqlite3.connect(DATA_PATH + 'CMASS_rands.db')
-randSampleQry = "SELECT * FROM CMASS_South_rands WHERE `index` IN (SELECT `index` FROM CMASS_South_rands ORDER BY RANDOM() LIMIT 50000) UNION SELECT * FROM CMASS_North_rands WHERE `index` IN (SELECT `index` FROM CMASS_North_rands ORDER BY RANDOM() LIMIT 50000)"
+randSampleQry = "SELECT * FROM CMASS_South_rands WHERE `index` IN (SELECT `index` FROM CMASS_South_rands ORDER BY RANDOM() LIMIT 5000000) UNION SELECT * FROM CMASS_North_rands WHERE `index` IN (SELECT `index` FROM CMASS_North_rands ORDER BY RANDOM() LIMIT 5000000)"
 CMASS_DF_rands_Sample2 = pd.read_sql(randSampleQry, con=connCMASSRands)
 CMASS_DF_rands.to_json(DATA_PATH + "CMASS_DF_rands_Sample2")
 print("CMASS_DF_rands_Sample2: ")
@@ -711,7 +711,7 @@ NOTES.close()
 
 
 connLOWZRands = sqlite3.connect(DATA_PATH + 'LOWZ_rands.db')
-randSampleQry = "SELECT * FROM LOWZ_South_rands WHERE `index` IN (SELECT `index` FROM LOWZ_South_rands ORDER BY RANDOM() LIMIT 50000) UNION SELECT * FROM LOWZ_North_rands WHERE `index` IN (SELECT `index` FROM LOWZ_North_rands ORDER BY RANDOM() LIMIT 50000)"
+randSampleQry = "SELECT * FROM LOWZ_South_rands WHERE `index` IN (SELECT `index` FROM LOWZ_South_rands ORDER BY RANDOM() LIMIT 5000000) UNION SELECT * FROM LOWZ_North_rands WHERE `index` IN (SELECT `index` FROM LOWZ_North_rands ORDER BY RANDOM() LIMIT 5000000)"
 LOWZ_DF_rands_Sample1 = pd.read_sql(randSampleQry, con=connLOWZRands)
 LOWZ_DF_rands_Sample1.to_json(DATA_PATH + "LOWZ_DF_rands")
 print("LOWZ_DF_rands_Sample1: ")
@@ -723,7 +723,7 @@ NOTES.close()
 connCMASSRands.close()
 
 connLOWZRands = sqlite3.connect(DATA_PATH + 'LOWZ_rands.db')
-randSampleQry = "SELECT * FROM LOWZ_South_rands WHERE `index` IN (SELECT `index` FROM LOWZ_South_rands ORDER BY RANDOM() LIMIT 50000) UNION SELECT * FROM LOWZ_North_rands WHERE `index` IN (SELECT `index` FROM LOWZ_North_rands ORDER BY RANDOM() LIMIT 50000)"
+randSampleQry = "SELECT * FROM LOWZ_South_rands WHERE `index` IN (SELECT `index` FROM LOWZ_South_rands ORDER BY RANDOM() LIMIT 5000000) UNION SELECT * FROM LOWZ_North_rands WHERE `index` IN (SELECT `index` FROM LOWZ_North_rands ORDER BY RANDOM() LIMIT 5000000)"
 LOWZ_DF_rands_Sample2 = pd.read_sql(randSampleQry, con=connLOWZRands)
 LOWZ_DF_rands.to_json(DATA_PATH + "LOWZ_DF_rands_Sample2")
 print("LOWZ_DF_rands_Sample2: ")

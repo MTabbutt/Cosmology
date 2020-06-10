@@ -5,10 +5,12 @@
 %%% Use these packages:
 \usepackage{geometry}
 \usepackage{setspace}
+\usepackage{soul}
+\usepackage{color}
 
 
 %%% Set things:
- \geometry{top = 1in, bottom=1in, left=1in, right=1in}
+ \geometry{top = .75in, bottom=.75in, left=.75in, right=.75in}
  
  
  %%% Make the title section:
@@ -29,17 +31,100 @@
 
 \fontsize{11}{12}
 
-\section{Introduction}
 
-\section{Apparent Magnitude:}
+% % % % % % % % % % % % % % % % % % % % % % % % 
+\section{Abstract:}
+
+LSST will supply up to $10^6$ supernovae (SNe) to constrain dark energy through the distance - redshift (D$_L$ - z) test. Obtaining spectroscopic SN redshifts (spec-zs) is unfeasible; alternatives are suboptimal and may be biased. We propose a powerful multi-tracer generalization of the Alcock- Paczynski test that pairs redshift-free distance tracers and an overlapping galaxy redshift survey. Cross-correlating $5\times 10^4$ redshift-free SNe with DESI or Euclid outperforms the classical D$_L$L - z test with spec-zs for all SN. Our method also applies to gravitational wave sirens or any redshift-free distance tracer.
+
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % 
+\section{Introduction:}
+
+\begin{itemize}
+
+  \item Accurate trace of the expansion history, e.g. through the D$_L$?z relation, is one of the foremost goals of current and next-generation surveys such as SDSS-IV, DES, DESI, EUCLID, LSST, and WFIRST
+  
+  \item LSST going to generate large type Ia SN sample at a rate of $\ge 10^4 yr^{-1}$. Already now, the $\ge 10^3 yr^{-1}$ SNe being observed over a wide redshift range make it impossible to obtain time-consuming spectroscopic follow-up for every SN, (the traditional approach underlying the success of cosmology with standard candles over the last two decades). 
+  
+  \item Alternative approach combines photometric types with spectroscopic redshift measurements of the presumed SN host galaxy,  Errors may lead to biases and loss of information in the inferred cosmological parameters.
+  
+  \item Future galaxy redshift surveys (DESI, EUCLID)  going to measure tens of millions of galaxy redshifts over large fractions of sky. It is realistic to expect a galaxy catalog with $10^7$ spectroscopic redshifts overlapping SN data sets over a wide redshift range on the time scale of LSST.
+  
+\end{itemize}
+
+% % % % % % % % % % % % % % % % % % % % % % % % 
+\section{Idea:}
+
+Propose a new method to infer cosmological parameters accurately from distance tracers (e.g. SNe) without redshifts:
+ 
+ \begin{itemize}
+
+  \item Exploit  fact that both distance tracers and galaxies are tracers of the matter density, and therefore spatially correlated through the underlying matter field
+  
+  \item Can tightly constrain cosmology by maximizing the spatial cross-correlation of overlapping distance catalog and redshift catalogs
+  
+  \item Approach shows a classical cosmological test in a new light as a limit of a multi-tracer generalization of the Alcock-Paczynski (A-P) test
+  
+  \item Particular feature of this cross-correlation approach is its robustness to both data systematics and modeling assumptions
+       
+\end{itemize}
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % 
+\section{Set-Up:}
+
+% % % % % % % % % %
+\subsection{Apparent Magnitude:}
+
+Constrain Luminosity Distance, $D_L$ through relationship between apparent, $m$, and absolute, $M$, magnitudes calibrated from light curves: 
 
 \begin{equation}
 m = 5 log_{10}(\frac{D_{L}(z)}{pc}) + M - 5
 \end{equation}
 
+- Get light-curves from photometric observations, then calibrate the relationship and get $D_L$. For some data might already have this, like for DES-Sn.
+
+- Equation is a definition of $D_L$, which is the thing you want to get and carry forward. 
+
+- \hl{$m$ is the apparent magnitude, this comes from observations, at what point in the light curve do you pick for m ???} 
+
+- $M$ is the absolute magnitude, this is gotten from fitting the light curve 
+
+% % % % % % % % % %
+\subsection{Luminosity Distance:}
+
+The luminosity distance is related to the cosmological model and redshift through this equation:
+
 \begin{equation}
 D_{L}(z) = \frac{c}{H}(1 + z) \int_{0}^{z} \frac{dz'}{\sqrt{\mathcal{E}(z)}}
 \end{equation}
 
+\begin{equation}
+\mathcal{E}(z) \equiv \Omega_m(1+z')^3 + \Omega_{de} \exp(3 \int^z_0 d \; ln(1+z')(1+\omega (z')))
+\end{equation}
+
+- Assume a flat universe ($\Omega_K = 0$, or $\Omega_{de} = 1 - \Omega_m$) with dark energy equation of state: $\omega(z) = \omega_0 + \omega_a(z/(1+z))$
 
 \end{document}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

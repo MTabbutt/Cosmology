@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  11 JUN 2020 10:49
+This is pdfTeX, Version 3.14159265-2.6-1.40.17 (TeX Live 2016) (preloaded format=pdflatex 2016.5.22)  11 JUN 2020 11:05
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -191,20 +191,22 @@ LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <11> not available
 LaTeX Font Warning: Font shape `OT1/cmr/bx/n' in size <5.5> not available
 (Font)              size <5> substituted on input line 115.
 
+LaTeX Font Info:    Font shape `OMS/cmr/m/it' in size <11> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 143.
 [3
 
-] (./Mukherjee_2018_Theory_Explanation.aux)
+] [4] (./Mukherjee_2018_Theory_Explanation.aux)
 
 LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 0.5pt have occurred.
 
  ) 
 Here is how much of TeX's memory you used:
- 1748 strings out of 493014
- 24265 string characters out of 6133351
+ 1752 strings out of 493014
+ 24319 string characters out of 6133351
  88857 words of memory out of 5000000
- 5311 multiletter control sequences out of 15000+600000
- 10049 words of font info for 35 fonts, out of 8000000 for 9000
+ 5314 multiletter control sequences out of 15000+600000
+ 10395 words of font info for 36 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  23i,6n,21p,685b,189s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/local/texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
@@ -220,12 +222,13 @@ texlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/te
 xlive/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/local/texli
 ve/2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/
 2016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2
-016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
-Output written on Mukherjee_2018_Theory_Explanation.pdf (3 pages, 152607 bytes)
+016/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/201
+6/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb>
+Output written on Mukherjee_2018_Theory_Explanation.pdf (4 pages, 170496 bytes)
 .
 PDF statistics:
- 70 PDF objects out of 1000 (max. 8388607)
- 50 compressed objects within 1 object stream
+ 77 PDF objects out of 1000 (max. 8388607)
+ 55 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  1 words of extra memory for PDF output out of 10000 (max. 10000000)
 

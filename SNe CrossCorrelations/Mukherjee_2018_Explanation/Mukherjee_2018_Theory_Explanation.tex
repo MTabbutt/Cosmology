@@ -92,6 +92,7 @@ m = 5 log_{10}(\frac{D_{L}(z)}{pc}) + M - 5
 
 - $M$ is the absolute magnitude, this is gotten from fitting the light curve 
 
+\clearpage
 % % % % % % % % % %
 \subsection{Luminosity Distance:}
 
@@ -106,6 +107,37 @@ D_{L}(z) = \frac{c}{H}(1 + z) \int_{0}^{z} \frac{dz'}{\sqrt{\mathcal{E}(z)}}
 \end{equation}
 
 - Assume a flat universe ($\Omega_K = 0$, or $\Omega_{de} = 1 - \Omega_m$) with dark energy equation of state: $\omega(z) = \omega_0 + \omega_a(z/(1+z))$
+
+
+% % % % % % % % % %
+\subsection{Isotropic Two-Point Correlation Function:}
+
+At a seperation, $r$, between two tracers ($x$ and $y$) of the density fluctuations, e.g. $1+\delta_x(\bf{s}) = \rho_x(\bf{s})/\bar{\rho}$, with respect to the background density, $\bar{\rho}$, can be written as: 
+
+\begin{equation}
+\xi^{iso}_{x-y}(r) = \frac{1}{2 \pi^2} \int k^2 \; dk \; b_x(z) \; b_y(z) \; P(k) \; j_0(kr) \; e^{-k^2/k^2_{max}}
+\end{equation}
+
+- $P(k)$ is the non-linear power spectrum obtained from the ensemble average of the density fluctuations in the Fourier domain for wavenumber $\bf{k}$
+
+- $j_0(kr)$ is the spherical Bessel function
+
+- $b_x = \delta_x/\delta_{dm}$ is the bias of the tracer x WRT Dark Matter - Things Ross has talked about before
+
+- The cutoff $k_{max}$ is introduced for a numerical convergence at high $k$, to avoid the oscillatory behavior of $j_0(kr)$
+
+- For galaxies: $x = g$, with galaxy bias $b_g \approx 1.6$,
+
+- For SNe: $x = sn$ and $b_{sn} = \delta_{sn}/ \delta_{sdm}$. While $b_{sn}$ is uncertain there are studies which indicate that the $b_{sn}$ may exceed $b_{g}$ by around 60\%. We will conservatively take $b_{sn} \approx 1.6$ as a fiducial value
+
+
+
+
+
+
+
+
+
 
 \end{document}
 

@@ -1,0 +1,11 @@
+Created Running notes file for tracking details about this run and products produced/saved
+ 
+0. Define the Queries you want to run and write:
+ 
+qry_PanSTARRS_Data_AllSELECT ID, DEC, RA, zSN, zHost FROM PanSTARRSNEW WHERE (zSN > -999) || (zHost > -999)
+ 
+qry_PanSTARRS_Data_All 
+SELECT ID, DEC, RA, zSN, zHost FROM PanSTARRSNEW WHERE (zSN > -999) || (zHost > -999)
+ 
+1. Pull in and parse data
+ 

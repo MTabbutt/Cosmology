@@ -1,8 +1,0 @@
-Hi there, good looking
- 
-Created Running notes file for tracking details about this run and products produced/saved
- 
-0. Pull in and parse data:
- 
-randsLength: 1000000
- 

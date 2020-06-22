@@ -10,5 +10,8 @@ This folder is the main folder for Cosmology research, individual projects are l
 <h4> SNe CrossCorrelations: </h4>
 - SNe Cross Correlations project. 
 
+<h4> Reference Code: </h4>
+- Snippets of code that work such as: Matplotlib - Basemaps. 
+
 <h4> Old: </h4>
 - Folder for old files or misc files. Room of Requirement for Code. Don't put important things in here. 

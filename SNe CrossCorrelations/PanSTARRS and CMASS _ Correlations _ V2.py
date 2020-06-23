@@ -85,7 +85,7 @@ def AutoCorrelationFunction(DataCatalog, RandCatalog):
 #         -1. Write a note about this speciif run!
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 NotesToWrite("Created Running notes file for tracking details about this run and products produced/saved")
-NotesToWrite("Notes about this specific run: Testing Python code on local machine")
+NotesToWrite("Notes about this specific run: 1st python test worked, trying again with larger data set. ")
 
 
 
@@ -94,7 +94,7 @@ NotesToWrite("Notes about this specific run: Testing Python code on local machin
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 NotesToWrite("0. Define the Queries you want to run and write and randoms length:")
 
-randsLength = 10**4
+randsLength = 10**8
 NotesToWrite("randsLength for PanSTARRS: " + str(randsLength))
 
 # Pull in All PanSTARRS Data (with a good redshift):
@@ -109,21 +109,21 @@ qry_BOSS_Data_SouthAndNorthALL = "SELECT * FROM CMASSLOWZTOT_South UNION SELECT 
 NotesToWrite("qry_BOSS_Data_SouthAndNorthALL" + " \n" + qry_BOSS_Data_SouthAndNorthALL)
 
 qry_BOSS_Rands_SouthAndNorthLimit = """SELECT * FROM CMASSLOWZTOT_South_rands 
-    WHERE `index` IN (SELECT `index`FROM CMASSLOWZTOT_South_rands ORDER BY RANDOM() LIMIT 500) UNION 
+    WHERE `index` IN (SELECT `index`FROM CMASSLOWZTOT_South_rands ORDER BY RANDOM() LIMIT 500000) UNION 
     SELECT * FROM CMASSLOWZTOT_North_rands 
-    WHERE `index`  IN (SELECT `index` FROM CMASSLOWZTOT_North_rands ORDER BY RANDOM() LIMIT 500)"""
+    WHERE `index`  IN (SELECT `index` FROM CMASSLOWZTOT_North_rands ORDER BY RANDOM() LIMIT 500000)"""
 NotesToWrite("qry_BOSS_Rands_SouthAndNorthLimit" + " \n" + qry_BOSS_Rands_SouthAndNorthLimit)
 
 qry_CMASS_Rands_SampleLimit = """SELECT * FROM CMASS_South_rands 
-    WHERE `index` IN (SELECT `index` FROM CMASS_South_rands ORDER BY RANDOM() LIMIT 500) UNION 
+    WHERE `index` IN (SELECT `index` FROM CMASS_South_rands ORDER BY RANDOM() LIMIT 500000) UNION 
     SELECT * FROM CMASS_North_rands WHERE 
-    `index` IN (SELECT `index` FROM CMASS_North_rands ORDER BY RANDOM() LIMIT 500)"""
+    `index` IN (SELECT `index` FROM CMASS_North_rands ORDER BY RANDOM() LIMIT 500000)"""
 NotesToWrite("qry_CMASS_Rands_SampleLimit" + " \n" + qry_CMASS_Rands_SampleLimit)
 
 qry_LOWZ_Rands_SampleLimit = """SELECT * FROM LOWZ_South_rands 
-    WHERE `index` IN (SELECT `index` FROM LOWZ_South_rands ORDER BY RANDOM() LIMIT 500) UNION 
+    WHERE `index` IN (SELECT `index` FROM LOWZ_South_rands ORDER BY RANDOM() LIMIT 500000) UNION 
     SELECT * FROM LOWZ_North_rands WHERE 
-    `index` IN (SELECT `index` FROM LOWZ_North_rands ORDER BY RANDOM() LIMIT 500)"""
+    `index` IN (SELECT `index` FROM LOWZ_North_rands ORDER BY RANDOM() LIMIT 500000)"""
 NotesToWrite("qry_LOWZ_Rands_SampleLimit" + " \n" + qry_LOWZ_Rands_SampleLimit)
 
 

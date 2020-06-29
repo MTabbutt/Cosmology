@@ -7,6 +7,7 @@
 \usepackage{setspace}
 \usepackage{soul}
 \usepackage{color}
+\usepackage{amsmath}
 
 
 %%% Set things:
@@ -44,7 +45,7 @@ LSST will supply up to $10^6$ supernovae (SNe) to constrain dark energy through 
 
 \begin{itemize}
 
-  \item Accurate trace of the expansion history, e.g. through the D$_L$?z relation, is one of the foremost goals of current and next-generation surveys such as SDSS-IV, DES, DESI, EUCLID, LSST, and WFIRST
+  \item Accurate trace of the expansion history, e.g. through the D$_L$ - z relation, is one of the foremost goals of current and next-generation surveys such as SDSS-IV, DES, DESI, EUCLID, LSST, and WFIRST
   
   \item LSST going to generate large type Ia SN sample at a rate of $\ge 10^4 yr^{-1}$. Already now, the $\ge 10^3 yr^{-1}$ SNe being observed over a wide redshift range make it impossible to obtain time-consuming spectroscopic follow-up for every SN, (the traditional approach underlying the success of cosmology with standard candles over the last two decades). 
   
@@ -158,7 +159,7 @@ Keith Suggestions:
 
 
 \begin{equation}
-\xi_{g-sn}(\textbf{r}) = (1 + \frac{f}{3 b_g}) \;  \xi^{iso}_{g-sn}(r) \; \mathcal{P}_0(\mu_r) + \frac{2 f}{3 b_g} \;  (\xi^{iso}_{g-sn}(r) - \bar{\xi}_{gs}(r)) \;  \mathcal{P}_2(\mu_r)
+\xi_{g-sn}(\boldsymbol{r}) = (1 + \frac{f}{3 b_g}) \;  \xi^{iso}_{g-sn}(r) \; \mathcal{P}_0(\mu_r) + \frac{2 f}{3 b_g} \;  (\xi^{iso}_{g-sn}(r) - \bar{\xi}_{gs}(r)) \;  \mathcal{P}_2(\mu_r)
 \end{equation}
 
 - $\bar{\xi}_{gs}(r) = \frac{3}{r^3}\int^r_0 \xi^{iso}_{g-sn}(s)s^2 \; ds$
@@ -167,11 +168,10 @@ Keith Suggestions:
 
 - $\mathcal{P}_{\mathcal{\ell}}(\mu_r)$ is the $\mathcal{\ell}$th order Legendre Polynomial. 
 
+- Anisotropic $g-g$ and $sn-sn$ autocorrelations take on analogous forms.  
 
 
-
-
-
+% % % % % % % % % %
 \subsection{Giant Equation:}
 
 \begin{equation}
@@ -183,6 +183,46 @@ Keith Suggestions:
 \begin{equation}
 \xi^{iso}_{x-y}(r) = \frac{1}{2 \pi^2} \int k^2 \; dk \; b_x(z) \; b_y(z) \; P(k) \; j_0(kr) \; e^{-k^2/k^2_{max}}
 \end{equation}
+
+
+% % % % % % % % % %% % % % % % % % % %% % % % % % % % % %
+\section{Method:}
+
+Consider both galaxies and SNe as tracers of $\delta_{dm}$ in comoving coordinates. Galaxies observed in redshift space and SNe in $D_L$ space. 
+
+Model these observed galaxy and SNe over-densities, $\boldsymbol{\delta}_{g, sn}$ as correlated Gaussian random fields. Then log-likelihood for: $\boldsymbol{\theta} \equiv \{\Omega_m, \omega_0, \omega_a, H_0\}$ becomes: 
+
+\begin{equation}
+- 2 \; \mathcal{L}_{full}(\boldsymbol{\delta}_g, \boldsymbol{\delta}_{sn} | \boldsymbol{\theta}) = \left(
+\begin{array}{c} 
+\boldsymbol{\delta}_g \\
+\boldsymbol{\delta}_{sn} \\ 
+\end{array} 
+\right) ^T  \boldsymbol{\Xi}^{-1} \left(
+\begin{array}{c} 
+\boldsymbol{\delta}_g \\
+\boldsymbol{\delta}_{sn} \\ 
+\end{array} 
+\right) \; + \; \text{ln} | \boldsymbol{\Xi} | 
+\end{equation}
+
+- The Covariance matrix, $\boldsymbol{\Xi}(\boldsymbol{\theta})$ is a block matrix of form:
+
+\begin{equation}
+\boldsymbol{\Xi}(\boldsymbol{\theta}) = \left(
+\begin{array}{cc} 
+\boldsymbol{Z}^T(\boldsymbol{\theta}) \boldsymbol{\xi}_{g-g} \boldsymbol{Z}(\boldsymbol{\theta})  & \boldsymbol{Z}^T(\boldsymbol{\theta}) \boldsymbol{\xi}_{g-sn} \boldsymbol{D}(\boldsymbol{\theta})\\
+\boldsymbol{D}^T(\boldsymbol{\theta}) \boldsymbol{\xi}_{g-sn}^T \boldsymbol{Z}(\boldsymbol{\theta}) & \boldsymbol{D}^T(\boldsymbol{\theta}) \boldsymbol{\xi}_{sn-sn} \boldsymbol{D}(\boldsymbol{\theta})\\ 
+\end{array} 
+\right)
+\end{equation}
+
+- The $\boldsymbol{\xi}$ are computed as outlines above. 
+
+- Parameter dependence in $\boldsymbol{\Xi}$ enters only through the mappings, $\boldsymbol{Z}$ and $\boldsymbol{D}$, from the comoving coordinates to $z$ and $D_L$ respectively. 
+
+- The form of the $\boldsymbol{\xi}$ are assumed to be fixed to a fiducial cosmology, and the optimal parameters will choose mappings $\boldsymbol{Z}$ and $\boldsymbol{D}$ that best re-map the forms of the correlation functions into the data space. 
+
 
 
 \end{document}

@@ -133,7 +133,14 @@ At a seperation, $r$, between two tracers ($x$ and $y$) of the density fluctuati
 % % % % % % % % % %
 \subsection{Red-Shift Space Distortions:}
 
-- RSD`s will affect galaxy positions in redshift space
+RSD`s will affect galaxy positions in redshift space (not SNe because no red-shift label for us). Need to add a single Kaiser factor to the galaxy-SN cross-power spectrum: 
+
+\begin{equation}
+P_{gs}(k) = (1 + f \mu^2_k / b_g) P_k
+\end{equation}
+
+- $f \equiv d \; ln G / d \; ln a$ is dimensionless growth rate
+- $G$ is growth factor, $\mu_k$ is the cosine of the angle between the Fourier modes and the line of sight 
 
 Keith Suggestions: 
 
@@ -147,10 +154,35 @@ Keith Suggestions:
 \end{itemize}
 
 % % % % % % % % % %
-\subsection{Isotropic Two-Point Correlation Function:}
+\subsection{Anisotropic Cross Correlation Function:}
+
+
+\begin{equation}
+\xi_{g-sn}(\textbf{r}) = (1 + \frac{f}{3 b_g}) \;  \xi^{iso}_{g-sn}(r) \; \mathcal{P}_0(\mu_r) + \frac{2 f}{3 b_g} \;  (\xi^{iso}_{g-sn}(r) - \bar{\xi}_{gs}(r)) \;  \mathcal{P}_2(\mu_r)
+\end{equation}
+
+- $\bar{\xi}_{gs}(r) = \frac{3}{r^3}\int^r_0 \xi^{iso}_{g-sn}(s)s^2 \; ds$
+
+- $\mu_r$ is the cosine of the angle between the line of sight and $\textbf{r}$
+
+- $\mathcal{P}_{\mathcal{\ell}}(\mu_r)$ is the $\mathcal{\ell}$th order Legendre Polynomial. 
 
 
 
+
+
+
+\subsection{Giant Equation:}
+
+\begin{equation}
+\xi_{g-sn}(\textbf{r}) = 
+(1 + \frac{f}{3 b_g}) \;  \xi^{iso}_{g-sn}(r) \; \mathcal{P}_0(\mu_r) + 
+\frac{2 f}{3 b_g} \;  (\xi^{iso}_{g-sn}(r) -\frac{3}{r^3}\int^r_0 \xi^{iso}_{g-sn}(s)s^2 \; ds) \;  \mathcal{P}_2(\mu_r)
+\end{equation}
+
+\begin{equation}
+\xi^{iso}_{x-y}(r) = \frac{1}{2 \pi^2} \int k^2 \; dk \; b_x(z) \; b_y(z) \; P(k) \; j_0(kr) \; e^{-k^2/k^2_{max}}
+\end{equation}
 
 
 \end{document}

@@ -109,21 +109,21 @@ qry_BOSS_Data_SouthAndNorthALL = "SELECT * FROM CMASSLOWZTOT_South UNION SELECT 
 NotesToWrite("qry_BOSS_Data_SouthAndNorthALL" + " \n" + qry_BOSS_Data_SouthAndNorthALL)
 
 qry_BOSS_Rands_SouthAndNorthLimit = """SELECT * FROM CMASSLOWZTOT_South_rands 
-    WHERE `index` IN (SELECT `index`FROM CMASSLOWZTOT_South_rands ORDER BY RANDOM() LIMIT 500000) UNION 
+    WHERE `index` IN (SELECT `index`FROM CMASSLOWZTOT_South_rands ORDER BY RANDOM() LIMIT 50000000) UNION 
     SELECT * FROM CMASSLOWZTOT_North_rands 
-    WHERE `index`  IN (SELECT `index` FROM CMASSLOWZTOT_North_rands ORDER BY RANDOM() LIMIT 500000)"""
+    WHERE `index`  IN (SELECT `index` FROM CMASSLOWZTOT_North_rands ORDER BY RANDOM() LIMIT 50000000)"""
 NotesToWrite("qry_BOSS_Rands_SouthAndNorthLimit" + " \n" + qry_BOSS_Rands_SouthAndNorthLimit)
 
 qry_CMASS_Rands_SampleLimit = """SELECT * FROM CMASS_South_rands 
-    WHERE `index` IN (SELECT `index` FROM CMASS_South_rands ORDER BY RANDOM() LIMIT 500000) UNION 
+    WHERE `index` IN (SELECT `index` FROM CMASS_South_rands ORDER BY RANDOM() LIMIT 50000000) UNION 
     SELECT * FROM CMASS_North_rands WHERE 
-    `index` IN (SELECT `index` FROM CMASS_North_rands ORDER BY RANDOM() LIMIT 500000)"""
+    `index` IN (SELECT `index` FROM CMASS_North_rands ORDER BY RANDOM() LIMIT 50000000)"""
 NotesToWrite("qry_CMASS_Rands_SampleLimit" + " \n" + qry_CMASS_Rands_SampleLimit)
 
 qry_LOWZ_Rands_SampleLimit = """SELECT * FROM LOWZ_South_rands 
-    WHERE `index` IN (SELECT `index` FROM LOWZ_South_rands ORDER BY RANDOM() LIMIT 500000) UNION 
+    WHERE `index` IN (SELECT `index` FROM LOWZ_South_rands ORDER BY RANDOM() LIMIT 50000000) UNION 
     SELECT * FROM LOWZ_North_rands WHERE 
-    `index` IN (SELECT `index` FROM LOWZ_North_rands ORDER BY RANDOM() LIMIT 500000)"""
+    `index` IN (SELECT `index` FROM LOWZ_North_rands ORDER BY RANDOM() LIMIT 50000000)"""
 NotesToWrite("qry_LOWZ_Rands_SampleLimit" + " \n" + qry_LOWZ_Rands_SampleLimit)
 
 
@@ -238,6 +238,8 @@ for pointing in pointings:
     
 NotesToWrite("Populated pointings with randoms. Randoms per pointing: (1, 3-10, 2):"+ str(randoms_Lengths))
 
+
+
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #         4. Make PanSTARRS Count-Count Auto Correlation Functions:
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -285,6 +287,7 @@ cat_rand_BOSS = treecorr.Catalog(ra=CMASSLOWZTOT_DF_rands['RA'], dec=CMASSLOWZTO
 
 NotesToWrite("Created cat_BOSS & cat_rand_BOSS.")
 
+"""
 r_BOSS, xi_BOSS, varxi_BOSS, sig_BOSS = AutoCorrelationFunction(cat_BOSS, cat_rand_BOSS)
 
 
@@ -501,6 +504,11 @@ plt.close()
 
 NotesToWrite("Plotted: LOWZ Rands AutoCorr with CMASS Rands")
 
+"""
+
+
+
+
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 #         6. Cross Correlate the BOSS and PanSTARRS sets
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
@@ -588,3 +596,17 @@ plt.savefig(TESTING_PRODUCTS_PATH + "/PanSTARRS cross Correlation with BOSS")
 plt.close()
 
 NotesToWrite("Plotted: PanSTARRS cross Correlation with BOSS")
+
+
+# Plot the Cross Correlation function without error bars:
+plt.plot(r_Pan_xCorr_BOSS, xi_Pan_xCorr_BOSS, color='blue')
+plt.plot(r_Pan_xCorr_BOSS, -xi_Pan_xCorr_BOSS, color='blue', ls=':')
+plt.xscale('log')
+plt.yscale('log', nonposy='clip')
+plt.xlabel(r'$\theta$ (degrees)')
+plt.title("PanSTARRS cross Correlation with BOSS no error")
+
+plt.savefig(TESTING_PRODUCTS_PATH + "/PanSTARRS cross Correlation with BOSS no error")
+plt.close()
+
+NotesToWrite("Plotted: PanSTARRS cross Correlation with BOSS no error")

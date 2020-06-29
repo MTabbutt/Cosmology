@@ -1,6 +1,6 @@
 Created Running notes file for tracking details about this run and products produced/saved
  
-Notes about this specific run: Testing Python code on local machine
+Notes about this specific run: 1st python test worked, trying again with larger data set. 
  
 0. Define the Queries you want to run and write and randoms length:
  
@@ -39,4 +39,34 @@ SELECT * FROM LOWZ_South_rands
 PanSTARRSNEW_GoodZ Database (with 10 pointings) objects: 1129
  
 CMASSLOWZTOT_DF Database objects: 1325856
+ 
+CMASSLOWZTOT_DF_rands Database objects: 1000
+ 
+2. Create the TreeCorr Catalogs of Data:
+ 
+Created cat_PanSTARRS_Full.
+ 
+3. Create the randoms for PanSTARRS. Include all 10 pointings, delete MD02 later.
+ 
+Plotted: PanSTARRS data and randoms
+ 
+Populated pointings with randoms. Randoms per pointing: (1, 3-10, 2):[5, 8, 1, 1, 3, 5, 2, 2, 5, 1]
+ 
+4. Make PanSTARRS Count-Count Auto Correlation Functions:
+ 
+Plotted: PanSTARRS Auto-Corr with PanSTARRS randoms
+ 
+5. Make CMASS&LOWZ Count-Count Auto Correlation Functions:
+ 
+5.1 BOSS total AutoCorrelation Function
+ 
+Created cat_BOSS & cat_rand_BOSS.
+ 
+6. Cross Correlate the BOSS and PanSTARRS sets
+ 
+Populated pointings with randoms. Randoms per pointing: (1, 3-10):[5, 8, 1, 1, 3, 5, 2, 2, 5]
+ 
+PanSTARRSNEW_GoodZ_ovelap Database (with 9 pointings) objects: 1058
+ 
+Plotted: PanSTARRS cross Correlation with BOSS
  

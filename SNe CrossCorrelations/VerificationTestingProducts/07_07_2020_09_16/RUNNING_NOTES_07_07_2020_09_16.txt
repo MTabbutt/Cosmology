@@ -1,0 +1,36 @@
+Created Running notes file for tracking details about this run and products produced/saved
+ 
+0. Define the Queries you want to run and write and randoms length:
+ 
+randsLength for PanSTARRS: 1000000000
+ 
+qry_PanSTARRS_Data_All 
+SELECT ID, DEC, RA, zSN, zHost FROM PanSTARRSNEW WHERE (zSN > -999) || (zHost > -999)
+ 
+qry_PanSTARRS_Data_Overlap 
+SELECT ID, DEC, RA, zSN, zHost FROM PanSTARRSNEW WHERE (DEC > -20) 
+    AND ((zSN > -999) OR (zHost > -999))
+ 
+qry_BOSS_Data_SouthAndNorthALL 
+SELECT * FROM CMASSLOWZTOT_South UNION SELECT * FROM CMASSLOWZTOT_North
+ 
+qry_BOSS_Rands_SouthAndNorthLimit 
+SELECT * FROM CMASSLOWZTOT_South_rands 
+    WHERE `index` IN (SELECT `index`FROM CMASSLOWZTOT_South_rands ORDER BY RANDOM() LIMIT 50000) UNION 
+    SELECT * FROM CMASSLOWZTOT_North_rands 
+    WHERE `index`  IN (SELECT `index` FROM CMASSLOWZTOT_North_rands ORDER BY RANDOM() LIMIT 50000)
+ 
+qry_CMASS_Rands_SampleLimit 
+SELECT * FROM CMASS_South_rands 
+    WHERE `index` IN (SELECT `index` FROM CMASS_South_rands ORDER BY RANDOM() LIMIT 50000) UNION 
+    SELECT * FROM CMASS_North_rands WHERE 
+    `index` IN (SELECT `index` FROM CMASS_North_rands ORDER BY RANDOM() LIMIT 50000)
+ 
+qry_LOWZ_Rands_SampleLimit 
+SELECT * FROM LOWZ_South_rands 
+    WHERE `index` IN (SELECT `index` FROM LOWZ_South_rands ORDER BY RANDOM() LIMIT 50000) UNION 
+    SELECT * FROM LOWZ_North_rands WHERE 
+    `index` IN (SELECT `index` FROM LOWZ_North_rands ORDER BY RANDOM() LIMIT 50000)
+ 
+1. Pull in and parse data
+ 

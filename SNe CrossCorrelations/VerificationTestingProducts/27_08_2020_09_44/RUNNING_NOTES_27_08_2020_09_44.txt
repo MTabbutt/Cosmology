@@ -1,0 +1,31 @@
+Created Running notes file for tracking details about this run and products produced/saved
+ 
+0. Define the Queries you want to run and write and randoms length:
+ 
+randsLength for PanSTARRS: 100000000
+ 
+qry_PanSTARRS_Data_All 
+SELECT ID, DEC, RA, zSN, zHost FROM PanSTARRSNEW WHERE (zSN > -999) || (zHost > -999)
+ 
+qry_PanSTARRS_Data_Overlap 
+SELECT ID, DEC, RA, zSN, zHost FROM PanSTARRSNEW WHERE (DEC > -20) 
+    AND ((zSN > -999) OR (zHost > -999))
+ 
+1. Pull in and parse data
+ 
+PanSTARRSNEW_GoodZ Database (with 10 pointings) objects: 1129
+ 
+2. Create the TreeCorr Catalogs of Data:
+ 
+Created cat_PanSTARRS_Full.
+ 
+3. Create the randoms for PanSTARRS. Include all 10 pointings, delete MD02 later.
+ 
+Populated pointings with randoms. Randoms per pointing: (1, 3-10, 2):[33924, 34503, 35141, 33445, 34413, 34692, 34594, 34405, 32674, 31902]
+ 
+4. Make PanSTARRS Count-Count Auto Correlation Functions:
+ 
+Plotted: PanSTARRS Auto-Corr with PanSTARRS randoms
+ 
+Creating save file with plot data:
+ 

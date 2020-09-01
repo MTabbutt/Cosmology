@@ -1,4 +1,4 @@
-## _Note: Have been saving rendered notebooks to this repo so it is large in size. Suggest downloading specific files instead of a clone if worried about the space it will take up._
+## _Note: Have been saving rendered notebooks to this repo so it is large in size. Suggest downloading specific files instead of a clone if worried about the space it will take up. 75 MB (09_2020)_
 
 <h1> Cosmology Project Folder Details: </h1>
 

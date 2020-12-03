@@ -1,0 +1,13 @@
+Large case with auto corr for both
+ 
+PanStarrs_Data_all_query: SELECT ID, DEC, RA, zSN, zHost FROM PanSTARRSNEW WHERE (zSN > -999) || (zHost > -999)
+ 
+PanSTARRS_Data_only_9_df: SELECT ID, DEC, RA, zSN, zHost FROM PanSTARRSNEW WHERE (DEC > -20) AND ((zSN > -999) OR (zHost > -999))
+ 
+BOSS_Data_All_query: SELECT * FROM CMASSLOWZTOT_South UNION SELECT * FROM CMASSLOWZTOT_North
+ 
+BOSS_Rands_Limit_query: SELECT * FROM CMASSLOWZTOT_South_rands 
+    WHERE `index` IN (SELECT `index`FROM CMASSLOWZTOT_South_rands ORDER BY RANDOM() LIMIT 8000000) UNION 
+    SELECT * FROM CMASSLOWZTOT_North_rands 
+    WHERE `index`  IN (SELECT `index` FROM CMASSLOWZTOT_North_rands ORDER BY RANDOM() LIMIT 8000000)
+ 
